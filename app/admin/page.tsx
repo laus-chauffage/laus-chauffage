@@ -205,7 +205,16 @@ export default function AdminPage() {
     fetchData();
     fetchPhotos();
     fetchCreneaux();
+    fetchRappelsMois();
   }, []);
+
+  async function fetchRappelsMois() {
+    setLoadingRappels(true);
+    const res = await fetch("/api/rappels/batch");
+    const data = await res.json();
+    setRappelsMois(data);
+    setLoadingRappels(false);
+  }
 
   async function fetchData() {
     setLoading(true);
@@ -446,14 +455,7 @@ export default function AdminPage() {
                       <p className="text-xs text-gray-400 mt-0.5">Clients dont l'entretien arrive à échéance le mois suivant.</p>
                     </div>
                     <div className="flex gap-2">
-                      <button onClick={async () => {
-                        setLoadingRappels(true);
-                        setBatchResult(null);
-                        const res = await fetch("/api/rappels/batch");
-                        const data = await res.json();
-                        setRappelsMois(data);
-                        setLoadingRappels(false);
-                      }} className="flex items-center gap-2 border border-[#1e3a5f] text-[#1e3a5f] hover:bg-[#1e3a5f] hover:text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors">
+                      <button onClick={async () => { setBatchResult(null); await fetchRappelsMois(); }} className="flex items-center gap-2 border border-[#1e3a5f] text-[#1e3a5f] hover:bg-[#1e3a5f] hover:text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors">
                         <Bell size={15} />{loadingRappels ? "Chargement…" : "Voir les rappels"}
                       </button>
                       {rappelsMois && (
