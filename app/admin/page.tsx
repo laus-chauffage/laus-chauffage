@@ -185,6 +185,7 @@ export default function AdminPage() {
   const [proheatKey, setProheatKey] = useState("");
   const [syncing, setSyncing] = useState(false);
   const [syncResult, setSyncResult] = useState<{ created: number; updated: number; skipped: number; total: number; error?: string } | null>(null);
+  const [selectionMode, setSelectionMode] = useState(false);
   const [selectedClients, setSelectedClients] = useState<Set<string>>(new Set());
   const [deletingBatch, setDeletingBatch] = useState(false);
 
@@ -531,6 +532,10 @@ export default function AdminPage() {
                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></svg>
                       Sync ProHeat
                     </button>
+                    <button onClick={() => { setSelectionMode(!selectionMode); setSelectedClients(new Set()); }}
+                      className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold border transition-colors ${selectionMode ? "bg-gray-700 text-white border-gray-700" : "border-gray-200 text-gray-500 hover:border-gray-400"}`}>
+                      <Trash2 size={16} />{selectionMode ? "Annuler" : "Sélectionner"}
+                    </button>
                     <button onClick={() => setShowNewClient(!showNewClient)}
                       className="flex items-center gap-2 bg-[#c0392b] text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-[#a93226] transition-colors">
                       <Plus size={16} />Nouveau client
@@ -642,7 +647,6 @@ export default function AdminPage() {
                         <select value={newClient.mode_contact} onChange={(e) => setNewClient({ ...newClient, mode_contact: e.target.value })}
                           className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]">
                           <option value="email">Email</option>
-                          <option value="sms">SMS</option>
                           <option value="courrier">Courrier postal</option>
                         </select>
                       </div>
@@ -655,7 +659,7 @@ export default function AdminPage() {
                 )}
 
                 {/* Liste clients */}
-                {selectedClients.size > 0 && (
+                {selectionMode && selectedClients.size > 0 && (
                   <div className="flex items-center justify-between bg-red-50 border border-red-200 rounded-xl px-4 py-3 mb-3">
                     <span className="text-sm font-medium text-red-700">{selectedClients.size} client(s) sélectionné(s)</span>
                     <div className="flex gap-2">
@@ -689,12 +693,16 @@ export default function AdminPage() {
                   </div>
                 )}
 
+                {editingClient && (
+                  <div className="fixed inset-0 z-10" onClick={() => setEditingClient(null)} />
+                )}
+
                 <div className="space-y-3">
                   {clientsFiltres.length === 0 ? (
                     <div className="bg-white rounded-2xl p-10 text-center text-gray-400 border border-gray-100">Aucun client.</div>
                   ) : (
                     clientsFiltres.map((c) => (
-                      <div key={c.id} className={`bg-white rounded-xl shadow-sm border p-4 transition-colors ${selectedClients.has(c.id) ? "border-red-300 bg-red-50/30" : "border-gray-100"}`}>
+                      <div key={c.id} className={`bg-white rounded-xl shadow-sm border p-4 transition-colors relative z-20 ${selectedClients.has(c.id) ? "border-red-300 bg-red-50/30" : "border-gray-100"}`}>
                         {editingClient === c.id ? (
                           /* Mode édition */
                           <div>
@@ -749,7 +757,7 @@ export default function AdminPage() {
                               <div>
                                 <label className="block text-xs font-medium text-gray-500 mb-1">Mode de contact</label>
                                 <select value={editForm.mode_contact ?? "email"}
-                                  onChange={(e) => setEditForm(prev => ({ ...prev, mode_contact: e.target.value as "email" | "courrier" }))}
+                                  onChange={(e) => setEditForm(prev => ({ ...prev, mode_contact: e.target.value as "email" | "courrier" | "sms" }))}
                                   className="w-full border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]">
                                   <option value="email">Email</option>
                                   <option value="courrier">Courrier postal</option>
@@ -777,20 +785,24 @@ export default function AdminPage() {
                           /* Mode affichage */
                           <div className="flex items-center justify-between gap-3">
                             <div className="flex items-center gap-3 flex-wrap min-w-0">
-                              <input
-                                type="checkbox"
-                                checked={selectedClients.has(c.id)}
-                                onChange={(e) => {
-                                  const next = new Set(selectedClients);
-                                  e.target.checked ? next.add(c.id) : next.delete(c.id);
-                                  setSelectedClients(next);
-                                }}
-                                className="w-4 h-4 accent-[#c0392b] shrink-0 cursor-pointer"
-                              />
-                              <p className="font-semibold text-[#1e3a5f] text-sm">{c.prenom} {c.nom}</p>
-                              <span className={`text-xs px-2 py-0.5 rounded-full font-medium shrink-0 ${STATUT_COLORS[c.statut]}`}>{STATUT_LABELS[c.statut]}</span>
-                              <span className="text-xs text-gray-400 hidden sm:inline">{c.commune}</span>
-                              <span className="text-xs text-gray-400 hidden md:inline">{c.type_chaudiere} — prochain : {c.prochain_entretien || "—"}</span>
+                              {selectionMode && (
+                                <input
+                                  type="checkbox"
+                                  checked={selectedClients.has(c.id)}
+                                  onChange={(e) => {
+                                    const next = new Set(selectedClients);
+                                    e.target.checked ? next.add(c.id) : next.delete(c.id);
+                                    setSelectedClients(next);
+                                  }}
+                                  className="w-4 h-4 accent-[#c0392b] shrink-0 cursor-pointer"
+                                />
+                              )}
+                              <button onClick={() => { setEditingClient(c.id); setEditForm({ ...c }); }} className="flex items-center gap-2 flex-wrap text-left hover:opacity-70 transition-opacity">
+                                <p className="font-semibold text-[#1e3a5f] text-sm">{c.prenom} {c.nom}</p>
+                                <span className={`text-xs px-2 py-0.5 rounded-full font-medium shrink-0 ${STATUT_COLORS[c.statut]}`}>{STATUT_LABELS[c.statut]}</span>
+                                <span className="text-xs text-gray-400 hidden sm:inline">{c.commune}</span>
+                                <span className="text-xs text-gray-400 hidden md:inline">{c.type_chaudiere} — prochain : {c.prochain_entretien || "—"}</span>
+                              </button>
                             </div>
                             <div className="flex items-center gap-1.5 shrink-0">
                               <input type="date"
@@ -806,38 +818,20 @@ export default function AdminPage() {
                                   className="p-1.5 bg-[#c0392b] hover:bg-[#a93226] text-white rounded-lg disabled:opacity-60">
                                   <Send size={14} />
                                 </button>
-                              ) : c.mode_contact === "sms" ? (
-                                <button onClick={async () => {
-                                  setSending(c.id);
-                                  await fetch("/api/rappels", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ clientId: c.id, mode: "sms" }) });
-                                  setSending(null);
-                                  showToast("SMS envoyé ✓");
-                                }} disabled={sending === c.id} title="Envoyer rappel SMS"
-                                  className="p-1.5 bg-green-600 hover:bg-green-700 text-white rounded-lg disabled:opacity-60">
-                                  <MailCheck size={14} />
-                                </button>
                               ) : (
                                 <button onClick={() => printRappel(c)} title="Imprimer courrier"
                                   className="p-1.5 border border-[#1e3a5f] text-[#1e3a5f] hover:bg-[#1e3a5f] hover:text-white rounded-lg transition-colors">
                                   <Printer size={14} />
                                 </button>
                               )}
-                              <button onClick={() => { setEditingClient(c.id); setEditForm({ ...c }); }} title="Modifier"
-                                className="p-1.5 border border-gray-200 text-gray-400 hover:border-[#1e3a5f] hover:text-[#1e3a5f] rounded-lg transition-colors">
-                                <Pencil size={14} />
-                              </button>
-                              <button onClick={() => openModal({
-                                title: "Supprimer le client",
-                                message: `Supprimer définitivement ${c.prenom} ${c.nom} ?`,
-                                confirmLabel: "Supprimer",
-                                confirmColor: "red",
-                                onConfirm: async () => {
-                                  closeModal();
-                                  await fetch("/api/admin/clients", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: c.id }) });
-                                  fetchData();
-                                },
-                              })} title="Supprimer" className="p-1.5 border border-red-200 text-red-400 hover:bg-red-50 rounded-lg transition-colors">
-                                <Trash2 size={14} />
+                              <button onClick={async () => {
+                                setSending(c.id + "_sms");
+                                await fetch("/api/rappels", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ clientId: c.id, mode: "sms" }) });
+                                setSending(null);
+                                showToast("SMS envoyé ✓");
+                              }} disabled={sending === c.id + "_sms"} title="Envoyer rappel SMS"
+                                className="p-1.5 bg-green-600 hover:bg-green-700 text-white rounded-lg disabled:opacity-60">
+                                <MailCheck size={14} />
                               </button>
                             </div>
                           </div>

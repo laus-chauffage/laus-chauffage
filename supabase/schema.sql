@@ -30,7 +30,7 @@ create table if not exists clients (
   type_chaudiere text not null default 'mazout' check (type_chaudiere in ('mazout', 'gaz')),
   dernier_entretien date,
   prochain_entretien date,
-  mode_contact text not null default 'email' check (mode_contact in ('email', 'courrier'))
+  mode_contact text not null default 'email' check (mode_contact in ('email', 'courrier', 'sms'))
 );
 
 -- Historique des rappels envoyés
