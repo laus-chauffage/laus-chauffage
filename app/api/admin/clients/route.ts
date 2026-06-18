@@ -5,7 +5,7 @@ export async function GET() {
   const sb = getSupabase();
   const [clientsRes, rappelsRes] = await Promise.all([
     sb.from("clients").select("*").order("prochain_entretien", { ascending: true }),
-    sb.from("rappels").select("client_id, type, date_envoi").order("date_envoi", { ascending: false }),
+    sb.from("rappels").select("client_id, type, date_envoi").gte("date_envoi", new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString()).order("date_envoi", { ascending: false }),
   ]);
 
   if (clientsRes.error) return NextResponse.json({ error: clientsRes.error.message }, { status: 500 });
