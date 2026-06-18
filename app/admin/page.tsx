@@ -78,23 +78,38 @@ function CalendrierAdmin({ reservations, onDayClick, selectedDay }: {
   selectedDay: string | null;
 }) {
   const [moisOffset, setMoisOffset] = useState(0);
+  const [googleEvents, setGoogleEvents] = useState<{ id: string; title: string; start: string }[]>([]);
   const now = new Date();
   const annee = new Date(now.getFullYear(), now.getMonth() + moisOffset, 1).getFullYear();
   const mois = new Date(now.getFullYear(), now.getMonth() + moisOffset, 1).getMonth();
 
+  useEffect(() => {
+    fetch(`/api/admin/calendar?year=${annee}&month=${mois + 1}`)
+      .then(r => r.json())
+      .then(d => setGoogleEvents(d.events || []))
+      .catch(() => setGoogleEvents([]));
+  }, [annee, mois]);
+
   const premierJour = new Date(annee, mois, 1);
   const dernierJour = new Date(annee, mois + 1, 0);
-  // lundi=0 ... dimanche=6
   const startDow = (premierJour.getDay() + 6) % 7;
   const nbJours = dernierJour.getDate();
 
-  // Groupe les réservations confirmées par date
+  // Groupe les réservations Supabase par date
   const rdvParJour: Record<string, Reservation[]> = {};
   for (const r of reservations) {
     if (r.statut === "confirme" || r.statut === "en_attente") {
       if (!rdvParJour[r.date]) rdvParJour[r.date] = [];
       rdvParJour[r.date].push(r);
     }
+  }
+
+  // Groupe les événements Google par date
+  const googleParJour: Record<string, typeof googleEvents> = {};
+  for (const e of googleEvents) {
+    const dateStr = e.start.split("T")[0];
+    if (!googleParJour[dateStr]) googleParJour[dateStr] = [];
+    googleParJour[dateStr].push(e);
   }
 
   const cells: (number | null)[] = [...Array(startDow).fill(null), ...Array.from({length: nbJours}, (_, i) => i + 1)];
@@ -117,19 +132,21 @@ function CalendrierAdmin({ reservations, onDayClick, selectedDay }: {
           if (!jour) return <div key={i} />;
           const dateStr = `${annee}-${String(mois + 1).padStart(2, "0")}-${String(jour).padStart(2, "0")}`;
           const rdvs = rdvParJour[dateStr] || [];
+          const gEvents = googleParJour[dateStr] || [];
           const isToday = dateStr === todayStr;
           const isSelected = dateStr === selectedDay;
           const hasRdv = rdvs.length > 0;
+          const hasGoogle = gEvents.length > 0;
           return (
             <button key={i} onClick={() => onDayClick(dateStr)}
               className={`relative flex flex-col items-center justify-center h-9 rounded-lg text-xs font-medium transition-all
-                ${isSelected ? "bg-[#1e3a5f] text-white" : isToday ? "bg-[#1e3a5f]/10 text-[#1e3a5f] font-bold" : hasRdv ? "hover:bg-gray-100 text-gray-700" : "hover:bg-gray-50 text-gray-400"}`}>
+                ${isSelected ? "bg-[#1e3a5f] text-white" : isToday ? "bg-[#1e3a5f]/10 text-[#1e3a5f] font-bold" : (hasRdv || hasGoogle) ? "hover:bg-gray-100 text-gray-700" : "hover:bg-gray-50 text-gray-400"}`}>
               {jour}
-              {hasRdv && !isSelected && (
-                <span className={`absolute bottom-1 w-1.5 h-1.5 rounded-full ${rdvs.some(r => r.statut === "en_attente") ? "bg-yellow-400" : "bg-[#c0392b]"}`} />
-              )}
-              {hasRdv && isSelected && (
-                <span className="absolute bottom-1 w-1.5 h-1.5 rounded-full bg-white/70" />
+              {(hasRdv || hasGoogle) && (
+                <div className="absolute bottom-1 flex gap-0.5">
+                  {hasRdv && <span className={`w-1.5 h-1.5 rounded-full ${isSelected ? "bg-white/70" : rdvs.some(r => r.statut === "en_attente") ? "bg-yellow-400" : "bg-[#c0392b]"}`} />}
+                  {hasGoogle && <span className={`w-1.5 h-1.5 rounded-full ${isSelected ? "bg-white/70" : "bg-blue-400"}`} />}
+                </div>
               )}
             </button>
           );
@@ -138,7 +155,19 @@ function CalendrierAdmin({ reservations, onDayClick, selectedDay }: {
       <div className="flex gap-4 mt-3 text-xs text-gray-400">
         <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-[#c0392b] inline-block"/>Confirmé</span>
         <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-yellow-400 inline-block"/>En attente</span>
+        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-blue-400 inline-block"/>Google Calendar</span>
       </div>
+      {selectedDay && googleParJour[selectedDay] && googleParJour[selectedDay].length > 0 && (
+        <div className="mt-3 border-t border-gray-100 pt-3">
+          <p className="text-sm font-semibold text-blue-600 mb-1">Google Calendar</p>
+          {googleParJour[selectedDay].map(e => (
+            <div key={e.id} className="text-sm text-gray-600 flex items-center gap-2 py-1">
+              <span className="w-2 h-2 rounded-full bg-blue-400 shrink-0" />
+              <span>{e.start.includes("T") ? e.start.split("T")[1].slice(0, 5) : ""} {e.title}</span>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

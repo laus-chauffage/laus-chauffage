@@ -41,6 +41,27 @@ function toBrusselsLocalStr(date: Date): string {
   return `${p.year}-${p.month}-${p.day}T${p.hour}:${p.minute}:${p.second}`;
 }
 
+export async function getMonthEvents(year: number, month: number) {
+  const auth = getAuth();
+  const calendar = google.calendar({ version: "v3", auth });
+  const start = new Date(year, month - 1, 1);
+  const end = new Date(year, month, 1);
+  const res = await calendar.events.list({
+    calendarId: process.env.GOOGLE_CALENDAR_ID || "primary",
+    timeMin: start.toISOString(),
+    timeMax: end.toISOString(),
+    singleEvents: true,
+    orderBy: "startTime",
+    maxResults: 250,
+  });
+  return (res.data.items || []).map(e => ({
+    id: e.id,
+    title: e.summary || "",
+    start: e.start?.dateTime || e.start?.date || "",
+    end: e.end?.dateTime || e.end?.date || "",
+  }));
+}
+
 export async function getAvailableSlots(dateStr: string): Promise<string[]> {
   const auth = getAuth();
   const calendar = google.calendar({ version: "v3", auth });
