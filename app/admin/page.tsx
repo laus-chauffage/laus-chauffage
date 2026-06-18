@@ -289,7 +289,7 @@ export default function AdminPage() {
       body: JSON.stringify(newClient),
     });
     setShowNewClient(false);
-    setNewClient({ prenom: "", nom: "", email: "", telephone: "", adresse: "", code_postal: "", commune: "", type_chaudiere: "mazout", dernier_entretien: "", mode_contact: "email" });
+    setNewClient({ civilite: "M", prenom: "", nom: "", email: "", telephone: "", adresse: "", code_postal: "", commune: "", type_chaudiere: "mazout", dernier_entretien: "", mode_contact: "email" });
     fetchData();
   }
 
