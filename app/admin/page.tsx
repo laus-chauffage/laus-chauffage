@@ -14,7 +14,7 @@ type Client = {
   type_chaudiere: "mazout" | "gaz";
   dernier_entretien: string;
   prochain_entretien: string;
-  mode_contact: "email" | "courrier";
+  mode_contact: "email" | "courrier" | "sms";
   statut: "ok" | "bientot" | "en_retard";
 };
 
@@ -450,7 +450,7 @@ export default function AdminPage() {
                                     {envoyes.courrier && <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-medium">✓ Courrier imprimé</span>}
                                     {!dejaSent && (
                                       <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${c.mode_contact === "email" ? "bg-blue-100 text-blue-700" : "bg-orange-100 text-orange-700"}`}>
-                                        {c.mode_contact === "email" ? "Email" : "Courrier"}
+                                        {c.mode_contact === "email" ? "Email" : c.mode_contact === "sms" ? "SMS" : "Courrier"}
                                       </span>
                                     )}
                                   </div>
@@ -642,6 +642,7 @@ export default function AdminPage() {
                         <select value={newClient.mode_contact} onChange={(e) => setNewClient({ ...newClient, mode_contact: e.target.value })}
                           className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]">
                           <option value="email">Email</option>
+                          <option value="sms">SMS</option>
                           <option value="courrier">Courrier postal</option>
                         </select>
                       </div>
@@ -801,9 +802,19 @@ export default function AdminPage() {
                                 <ClipboardCheck size={14} />
                               </button>
                               {c.mode_contact === "email" ? (
-                                <button onClick={() => sendRappel(c.id)} disabled={sending === c.id} title="Envoyer rappel"
+                                <button onClick={() => sendRappel(c.id)} disabled={sending === c.id} title="Envoyer rappel email"
                                   className="p-1.5 bg-[#c0392b] hover:bg-[#a93226] text-white rounded-lg disabled:opacity-60">
                                   <Send size={14} />
+                                </button>
+                              ) : c.mode_contact === "sms" ? (
+                                <button onClick={async () => {
+                                  setSending(c.id);
+                                  await fetch("/api/rappels", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ clientId: c.id, mode: "sms" }) });
+                                  setSending(null);
+                                  showToast("SMS envoyé ✓");
+                                }} disabled={sending === c.id} title="Envoyer rappel SMS"
+                                  className="p-1.5 bg-green-600 hover:bg-green-700 text-white rounded-lg disabled:opacity-60">
+                                  <MailCheck size={14} />
                                 </button>
                               ) : (
                                 <button onClick={() => printRappel(c)} title="Imprimer courrier"
