@@ -13,7 +13,38 @@ export async function sendConfirmationRequestEmail(data: {
   adresse: string;
   commune: string;
   confirmUrl: string;
+  piece_jointe_url?: string;
+  piece_jointe_nom?: string;
 }) {
+  // Notification admin si pièce jointe
+  if (data.piece_jointe_url) {
+    await resend.emails.send({
+      from: FROM,
+      to: "sebastien.laus@gmail.com",
+      subject: `Nouvelle demande RDV avec pièce jointe — ${data.prenom} ${data.nom}`,
+      html: `
+        <div style="font-family:Arial,sans-serif;max-width:560px;margin:0 auto;color:#1a1a1a">
+          <div style="background:#1e3a5f;padding:24px;border-radius:8px 8px 0 0">
+            <h1 style="color:white;margin:0;font-size:20px">📎 Pièce jointe reçue</h1>
+          </div>
+          <div style="background:#f9f9f9;padding:24px;border-radius:0 0 8px 8px;border:1px solid #eee">
+            <p><strong>${data.prenom} ${data.nom}</strong> a joint un fichier à sa demande de RDV :</p>
+            <table style="width:100%;border-collapse:collapse;margin:16px 0">
+              <tr><td style="padding:8px;border-bottom:1px solid #eee;color:#666">Service</td><td style="padding:8px;border-bottom:1px solid #eee;font-weight:bold">${data.service}</td></tr>
+              <tr><td style="padding:8px;border-bottom:1px solid #eee;color:#666">Date</td><td style="padding:8px;border-bottom:1px solid #eee;font-weight:bold">${data.date} à ${data.creneau}</td></tr>
+              <tr><td style="padding:8px;color:#666">Adresse</td><td style="padding:8px;font-weight:bold">${data.adresse}, ${data.commune}</td></tr>
+            </table>
+            <div style="text-align:center;margin:24px 0">
+              <a href="${data.piece_jointe_url}" style="background:#1e3a5f;color:white;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:bold">
+                📎 Voir ${data.piece_jointe_nom || "la pièce jointe"}
+              </a>
+            </div>
+          </div>
+        </div>
+      `,
+    }).catch(console.error);
+  }
+
   await resend.emails.send({
     from: FROM,
     to: data.email,

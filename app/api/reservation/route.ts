@@ -14,7 +14,7 @@ const SERVICE_LABELS: Record<string, string> = {
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
-  const { service, date, creneau, nom, prenom, email, telephone, rue, numero, commune, notes } = body;
+  const { service, date, creneau, nom, prenom, email, telephone, rue, numero, code_postal, commune, notes, piece_jointe_url, piece_jointe_nom } = body;
 
   const serviceLabel = SERVICE_LABELS[service] || service;
   const dateFormatted = format(parse(date, "yyyy-MM-dd", new Date()), "EEEE d MMMM yyyy", { locale: fr });
@@ -23,8 +23,10 @@ export async function POST(req: NextRequest) {
   const tokenExpiresAt = addHours(new Date(), 24).toISOString();
 
   const { error } = await getSupabase().from("reservations").insert({
-    nom, prenom, email, telephone, rue, numero: numero || null, commune,
+    nom, prenom, email, telephone, rue, numero: numero || null, code_postal: code_postal || null, commune,
     service, date, creneau, notes,
+    piece_jointe_url: piece_jointe_url || null,
+    piece_jointe_nom: piece_jointe_nom || null,
     statut: "en_attente",
     token,
     token_expires_at: tokenExpiresAt,
@@ -45,6 +47,8 @@ export async function POST(req: NextRequest) {
       date: dateFormatted,
       creneau, adresse, commune,
       confirmUrl,
+      piece_jointe_url: piece_jointe_url || undefined,
+      piece_jointe_nom: piece_jointe_nom || undefined,
     });
   } catch (err) {
     console.error("Email error:", err);

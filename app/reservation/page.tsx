@@ -13,7 +13,6 @@ const SERVICES = [
   { id: "installation", label: "Devis", duree: "1h" },
 ];
 
-const COMMUNES = ["Rebecq", "Tubize", "Braine-le-Comte", "Soignies", "Enghien", "Braine-le-Château", "Braine-l'Alleud", "Ittre", "Autre"];
 
 const CRENEAUX = ["08:00", "10:00", "12:00", "14:00"];
 
@@ -35,9 +34,12 @@ function ReservationContent() {
   const [loadingSlots, setLoadingSlots] = useState(false);
   const [joursActifs, setJoursActifs] = useState<number[]>([1, 2, 3, 4, 5]);
 
-  const [form, setForm] = useState({ nom: "", prenom: "", email: "", telephone: "", rue: "", numero: "", commune: "", communeAutre: "", notes: "" });
+  const [form, setForm] = useState({ nom: "", prenom: "", email: "", telephone: "", rue: "", numero: "", code_postal: "", commune: "", notes: "" });
   const [done, setDone] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [fichier, setFichier] = useState<File | null>(null);
+  const [dragOver, setDragOver] = useState(false);
+  const [uploadError, setUploadError] = useState("");
 
   const today = startOfDay(new Date());
   const minDate = addDays(today, 1);
@@ -81,11 +83,25 @@ function ReservationContent() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSubmitting(true);
-    const commune = form.commune === "Autre" ? form.communeAutre : form.commune;
+    setUploadError("");
+    const commune = form.commune;
+
+    let piece_jointe_url = null;
+    let piece_jointe_nom = null;
+    if (fichier) {
+      const fd = new FormData();
+      fd.append("file", fichier);
+      const res = await fetch("/api/reservation/upload", { method: "POST", body: fd });
+      const data = await res.json();
+      if (!res.ok) { setUploadError(data.error || "Erreur upload"); setSubmitting(false); return; }
+      piece_jointe_url = data.url;
+      piece_jointe_nom = data.nom;
+    }
+
     await fetch("/api/reservation", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ service, date: date ? format(date, "yyyy-MM-dd") : "", creneau, ...form, commune }),
+      body: JSON.stringify({ service, date: date ? format(date, "yyyy-MM-dd") : "", creneau, ...form, commune, piece_jointe_url, piece_jointe_nom }),
     });
     setDone(true);
     setSubmitting(false);
@@ -105,7 +121,7 @@ function ReservationContent() {
             setService("");
             setDate(undefined);
             setCreneau("");
-            setForm({ nom: "", prenom: "", email: "", telephone: "", rue: "", numero: "", commune: "", communeAutre: "", notes: "" });
+            setForm({ nom: "", prenom: "", email: "", telephone: "", rue: "", numero: "", code_postal: "", commune: "", notes: "" });
           }} className="bg-[#c0392b] hover:bg-[#a93226] text-white px-6 py-3 rounded-xl font-semibold transition-colors">
             Nouvelle réservation
           </button>
@@ -245,29 +261,57 @@ function ReservationContent() {
                       className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]" />
                   </div>
                 ))}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Commune *</label>
-                  <select required value={form.commune} onChange={(e) => setForm({ ...form, commune: e.target.value, communeAutre: "" })}
-                    className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]">
-                    <option value="">Sélectionnez votre commune</option>
-                    {COMMUNES.map(c => <option key={c} value={c}>{c}</option>)}
-                  </select>
-                  {form.commune === "Autre" && (
-                    <input
-                      type="text"
-                      required
-                      placeholder="Précisez votre commune"
-                      value={form.communeAutre}
-                      onChange={(e) => setForm({ ...form, communeAutre: e.target.value })}
-                      className="mt-2 w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]"
-                    />
-                  )}
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Code postal *</label>
+                    <input required type="text" value={form.code_postal}
+                      onChange={(e) => setForm({ ...form, code_postal: e.target.value })}
+                      className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Commune *</label>
+                    <input required type="text" value={form.commune}
+                      onChange={(e) => setForm({ ...form, commune: e.target.value })}
+                      className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]" />
+                  </div>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Notes / remarques</label>
                   <textarea rows={3} value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })}
                     placeholder="Type de chaudière, problème constaté…"
                     className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Photo ou document <span className="text-gray-400 font-normal">(optionnel)</span></label>
+                  <div
+                    onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+                    onDragLeave={() => setDragOver(false)}
+                    onDrop={(e) => {
+                      e.preventDefault();
+                      setDragOver(false);
+                      const f = e.dataTransfer.files[0];
+                      if (f) setFichier(f);
+                    }}
+                    onClick={() => document.getElementById("fichier-input")?.click()}
+                    className={`border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-colors ${dragOver ? "border-[#1e3a5f] bg-[#1e3a5f]/5" : fichier ? "border-green-400 bg-green-50" : "border-gray-200 hover:border-[#1e3a5f]"}`}
+                  >
+                    <input id="fichier-input" type="file" className="hidden" accept="image/jpeg,image/png,image/webp,application/pdf"
+                      onChange={(e) => { const f = e.target.files?.[0]; if (f) setFichier(f); }} />
+                    {fichier ? (
+                      <div className="flex items-center justify-center gap-2 text-green-700">
+                        <span className="text-lg">{fichier.type === "application/pdf" ? "📄" : "🖼️"}</span>
+                        <span className="text-sm font-medium truncate max-w-xs">{fichier.name}</span>
+                        <button type="button" onClick={(e) => { e.stopPropagation(); setFichier(null); }}
+                          className="ml-2 text-gray-400 hover:text-red-500 text-xs">✕</button>
+                      </div>
+                    ) : (
+                      <>
+                        <p className="text-sm text-gray-500">Glissez une photo ou un PDF ici</p>
+                        <p className="text-xs text-gray-400 mt-1">ou cliquez pour sélectionner · JPG, PNG, PDF · max 10MB</p>
+                      </>
+                    )}
+                  </div>
+                  {uploadError && <p className="text-red-500 text-xs mt-1">{uploadError}</p>}
                 </div>
                 <div className="flex gap-3 pt-2">
                   <button type="button" onClick={() => setStep(2)} className="flex-1 border-2 border-gray-200 text-gray-600 hover:border-[#1e3a5f] py-3 rounded-xl font-semibold transition-colors">
