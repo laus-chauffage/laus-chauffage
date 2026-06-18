@@ -1,8 +1,7 @@
 ﻿"use client";
 import { useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Flame } from "lucide-react";
 
 const links = [
   { href: "/", label: "Accueil" },
@@ -19,7 +18,7 @@ export default function Navbar() {
     <header className="bg-[#1e3a5f] text-white sticky top-0 z-50 shadow-lg">
       <div className="max-w-6xl mx-auto px-4 flex items-center justify-between h-16">
         <Link href="/" className="flex items-center gap-2 font-bold text-xl">
-          <Image src="/logo.png" alt="Laus Chauffage" width={36} height={36} className="object-contain" />
+          <Flame className="text-[#c0392b]" size={24} />
           Laus Chauffage
         </Link>
 
