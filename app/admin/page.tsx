@@ -308,7 +308,13 @@ export default function AdminPage() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ clientId, date_entretien: date }),
         });
+        await fetch("/api/satisfaction", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ clientId }),
+        });
         setMarquerFait(null);
+        showToast("Entretien enregistré — email de satisfaction envoyé ✓");
         fetchData();
       },
     });
