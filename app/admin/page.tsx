@@ -16,6 +16,7 @@ type Client = {
   prochain_entretien: string;
   mode_contact: "email" | "courrier" | "sms";
   statut: "ok" | "bientot" | "en_retard";
+  rappels_envoyes?: { email?: string; courrier?: string; sms?: string };
 };
 
 type Reservation = {
