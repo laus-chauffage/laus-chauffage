@@ -1,5 +1,5 @@
 ﻿"use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { DayPicker } from "react-day-picker";
 import { fr } from "date-fns/locale";
@@ -17,7 +17,7 @@ const COMMUNES = ["Rebecq", "Tubize", "Braine-le-Comte", "Soignies", "Enghien", 
 
 const CRENEAUX = ["08:00", "10:00", "12:00", "14:00"];
 
-export default function ReservationPage() {
+function ReservationContent() {
   const searchParams = useSearchParams();
   const [step, setStep] = useState(1);
   const [service, setService] = useState("");
@@ -283,6 +283,14 @@ export default function ReservationPage() {
         </div>
       </section>
     </>
+  );
+}
+
+export default function ReservationPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-gray-50" />}>
+      <ReservationContent />
+    </Suspense>
   );
 }
 
