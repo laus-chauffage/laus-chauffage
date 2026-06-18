@@ -25,7 +25,8 @@ export function calcProchainEntretien(dernierEntretien: string, type: "mazout" |
   return prochain.toISOString().split("T")[0];
 }
 
-export function calcStatut(prochainEntretien: string): "ok" | "bientot" | "en_retard" {
+export function calcStatut(prochainEntretien: string | null): "ok" | "bientot" | "en_retard" {
+  if (!prochainEntretien) return "ok";
   const prochain = parseISO(prochainEntretien);
   const now = new Date();
   const seuil = subWeeks(prochain, 6);

@@ -8,8 +8,7 @@ import { CheckCircle } from "lucide-react";
 import "react-day-picker/style.css";
 
 const SERVICES = [
-  { id: "entretien-mazout", label: "Entretien chaudière mazout", duree: "2h" },
-  { id: "entretien-gaz", label: "Entretien chaudière gaz", duree: "2h" },
+  { id: "entretien", label: "Entretien chaudière", duree: "2h" },
   { id: "depannage", label: "Dépannage", duree: "2h" },
   { id: "installation", label: "Devis", duree: "1h" },
 ];

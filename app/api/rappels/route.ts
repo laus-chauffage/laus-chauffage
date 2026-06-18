@@ -18,6 +18,7 @@ export async function POST(req: NextRequest) {
   const typeLabel = client.type_chaudiere === "mazout" ? "chaudière mazout" : "chaudière gaz";
 
   await sendRappelEmail({
+    civilite: client.civilite,
     prenom: client.prenom,
     nom: client.nom,
     email: client.email,

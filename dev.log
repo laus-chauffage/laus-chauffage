@@ -1,0 +1,893 @@
+
+> laus-chauffage@0.1.0 dev
+> next dev
+
+▲ Next.js 16.2.9 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://10.5.0.2:3000
+- Environments: .env.local
+✓ Ready in 700ms
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+
+⨯ ./app/admin/page.tsx:598:15
+Expected '</', got '<eof>'
+  [90m596 |[0m                 })}
+  [90m597 |[0m               </div>
+[31m[1m>[0m [90m598 |[0m             )}
+  [90m    |[0m               [31m[1m^[0m
+
+Parsing ecmascript source code failed
+
+
+ GET /admin 500 in 695ms (next.js: 371ms, proxy.ts: 122ms, application-code: 201ms)
+[browser] Uncaught Error: ./app/admin/page.tsx:598:15
+Expected '</', got '<eof>'
+  596 |                 })}
+  597 |               </div>
+> 598 |             )}
+      |               ^
+
+Parsing ecmascript source code failed
+
+
+    at <unknown> (Error: ./app/admin/page.tsx:598:15)
+    at <unknown> (Error: (./app/admin/page.tsx:598:15)
+[browser] ./app/admin/page.tsx:598:15
+Expected '</', got '<eof>'
+  596 |                 })}
+  597 |               </div>
+> 598 |             )}
+      |               ^
+
+Parsing ecmascript source code failed 
+[browser] ./app/admin/page.tsx:598:15
+Expected '</', got '<eof>'
+  596 |                 })}
+  597 |               </div>
+> 598 |             )}
+      |               ^
+
+Parsing ecmascript source code failed 
+⨯ ./app/admin/page.tsx:598:15
+Expected '</', got '<eof>'
+  [90m596 |[0m                 })}
+  [90m597 |[0m               </div>
+[31m[1m>[0m [90m598 |[0m             )}
+  [90m    |[0m               [31m[1m^[0m
+
+Parsing ecmascript source code failed
+
+
+ GET /admin 500 in 22ms (next.js: 10ms, proxy.ts: 4ms, application-code: 8ms)
+[browser] Uncaught Error: ./app/admin/page.tsx:598:15
+Expected '</', got '<eof>'
+  596 |                 })}
+  597 |               </div>
+> 598 |             )}
+      |               ^
+
+Parsing ecmascript source code failed
+
+
+    at <unknown> (Error: ./app/admin/page.tsx:598:15)
+    at <unknown> (Error: (./app/admin/page.tsx:598:15)
+[browser] ./app/admin/page.tsx:598:15
+Expected '</', got '<eof>'
+  596 |                 })}
+  597 |               </div>
+> 598 |             )}
+      |               ^
+
+Parsing ecmascript source code failed 
+[browser] ./app/admin/page.tsx:598:15
+Expected '</', got '<eof>'
+  596 |                 })}
+  597 |               </div>
+> 598 |             )}
+      |               ^
+
+Parsing ecmascript source code failed 
+[browser] ./app/admin/page.tsx:598:15
+Expected '</', got '<eof>'
+  596 |                 })}
+  597 |               </div>
+> 598 |             )}
+      |               ^
+
+Parsing ecmascript source code failed 
+[browser] ./app/admin/page.tsx:598:15
+Expected '</', got '<eof>'
+  596 |                 })}
+  597 |               </div>
+> 598 |             )}
+      |               ^
+
+Parsing ecmascript source code failed 
+[browser] ./app/admin/page.tsx:598:15
+Expected '</', got '<eof>'
+  596 |                 })}
+  597 |               </div>
+> 598 |             )}
+      |               ^
+
+Parsing ecmascript source code failed 
+✓ Compiled in 474ms
+ GET /admin 200 in 436ms (next.js: 209ms, proxy.ts: 15ms, application-code: 212ms)
+ GET /api/admin/photos 200 in 387ms (next.js: 171ms, application-code: 216ms)
+ GET /api/admin/disponibilites 200 in 422ms (next.js: 205ms, application-code: 217ms)
+ GET /api/admin/clients 200 in 426ms (next.js: 137ms, application-code: 289ms)
+ GET /api/admin/reservations 200 in 428ms (next.js: 87ms, application-code: 341ms)
+ POST /api/admin/disponibilites 200 in 185ms (next.js: 3ms, application-code: 182ms)
+ POST /api/admin/disponibilites 200 in 73ms (next.js: 3ms, application-code: 71ms)
+ POST /api/admin/disponibilites 200 in 71ms (next.js: 2ms, application-code: 68ms)
+ POST /api/admin/disponibilites 200 in 56ms (next.js: 3ms, application-code: 53ms)
+ POST /api/admin/disponibilites 200 in 54ms (next.js: 3ms, application-code: 51ms)
+ POST /api/admin/disponibilites 200 in 56ms (next.js: 2ms, application-code: 54ms)
+ POST /api/admin/disponibilites 200 in 55ms (next.js: 2ms, application-code: 52ms)
+ POST /api/admin/disponibilites 200 in 61ms (next.js: 2ms, application-code: 58ms)
+ POST /api/admin/disponibilites 200 in 58ms (next.js: 2ms, application-code: 56ms)
+ POST /api/admin/disponibilites 200 in 59ms (next.js: 2ms, application-code: 57ms)
+ GET /reservation 200 in 53ms (next.js: 32ms, application-code: 21ms)
+[browser] Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+ GET /api/admin/disponibilites 200 in 132ms (next.js: 3ms, application-code: 129ms)
+ GET /api/calendar?date=2026-06-18&service=installation 200 in 1275ms (next.js: 802ms, application-code: 472ms)
+ GET /api/calendar?date=2026-06-19&service=installation 200 in 297ms (next.js: 3ms, application-code: 294ms)
+ GET /api/calendar?date=2026-06-22&service=installation 200 in 591ms (next.js: 3ms, application-code: 588ms)
+ GET /api/calendar?date=2026-06-23&service=installation 200 in 263ms (next.js: 2ms, application-code: 261ms)
+ GET /api/calendar?date=2026-06-24&service=installation 200 in 273ms (next.js: 3ms, application-code: 270ms)
+ GET /api/calendar?date=2026-06-25&service=installation 200 in 274ms (next.js: 3ms, application-code: 272ms)
+ GET /api/calendar?date=2026-06-26&service=installation 200 in 254ms (next.js: 2ms, application-code: 252ms)
+ GET /api/calendar?date=2026-06-19&service=installation 200 in 251ms (next.js: 3ms, application-code: 248ms)
+ GET /api/calendar?date=2026-06-18&service=installation 200 in 237ms (next.js: 2ms, application-code: 235ms)
+ GET /reservation 200 in 87ms (next.js: 50ms, application-code: 36ms)
+ GET /reservation 200 in 25ms (next.js: 4ms, application-code: 21ms)
+ GET /reservation 200 in 27ms (next.js: 4ms, application-code: 23ms)
+ GET /reservation 200 in 84ms (next.js: 45ms, application-code: 39ms)
+ GET /reservation 200 in 41ms (next.js: 4ms, application-code: 37ms)
+ GET /reservation 200 in 22ms (next.js: 4ms, application-code: 19ms)
+ GET /reservation 200 in 81ms (next.js: 49ms, application-code: 32ms)
+ GET /reservation 200 in 24ms (next.js: 5ms, application-code: 20ms)
+ GET /reservation 200 in 33ms (next.js: 4ms, application-code: 29ms)
+ GET /api/calendar?date=2026-06-19&service=installation 200 in 1205ms (next.js: 678ms, application-code: 526ms)
+ GET /api/calendar?date=2026-06-26&service=installation 200 in 288ms (next.js: 3ms, application-code: 286ms)
+ GET /api/calendar?date=2026-06-25&service=installation 200 in 311ms (next.js: 3ms, application-code: 308ms)
+ GET /api/calendar?date=2026-06-24&service=installation 200 in 279ms (next.js: 2ms, application-code: 276ms)
+ GET /api/calendar?date=2026-06-23&service=installation 200 in 233ms (next.js: 2ms, application-code: 231ms)
+ GET /api/calendar?date=2026-06-22&service=installation 200 in 271ms (next.js: 3ms, application-code: 268ms)
+ GET /api/calendar?date=2026-06-29&service=installation 200 in 232ms (next.js: 3ms, application-code: 230ms)
+ GET /api/calendar?date=2026-06-30&service=installation 200 in 254ms (next.js: 2ms, application-code: 252ms)
+ GET /api/calendar?date=2026-06-18&service=installation 200 in 279ms (next.js: 2ms, application-code: 276ms)
+ GET /api/calendar?date=2026-06-19&service=installation 200 in 320ms (next.js: 2ms, application-code: 317ms)
+ GET /api/calendar?date=2026-06-23&service=installation 200 in 333ms (next.js: 2ms, application-code: 330ms)
+ GET /api/calendar?date=2026-06-24&service=installation 200 in 295ms (next.js: 2ms, application-code: 293ms)
+ GET /api/calendar?date=2026-06-25&service=installation 200 in 323ms (next.js: 3ms, application-code: 320ms)
+ GET /api/calendar?date=2026-06-26&service=installation 200 in 466ms (next.js: 3ms, application-code: 464ms)
+ GET /api/calendar?date=2026-06-30&service=installation 200 in 281ms (next.js: 2ms, application-code: 279ms)
+ GET /api/calendar?date=2026-06-29&service=installation 200 in 312ms (next.js: 3ms, application-code: 309ms)
+ GET /api/calendar?date=2026-06-22&service=installation 200 in 239ms (next.js: 2ms, application-code: 237ms)
+ GET /admin 200 in 145ms (next.js: 13ms, proxy.ts: 36ms, application-code: 96ms)
+ GET /api/admin/clients 200 in 220ms (next.js: 57ms, application-code: 164ms)
+ GET /api/admin/reservations 200 in 222ms (next.js: 30ms, application-code: 192ms)
+ GET /api/admin/disponibilites 200 in 186ms (next.js: 50ms, application-code: 136ms)
+ GET /api/admin/photos 200 in 221ms (next.js: 25ms, application-code: 196ms)
+ POST /api/admin/disponibilites 200 in 132ms (next.js: 3ms, application-code: 129ms)
+ POST /api/admin/disponibilites 200 in 63ms (next.js: 2ms, application-code: 60ms)
+ POST /api/admin/disponibilites 200 in 123ms (next.js: 3ms, application-code: 121ms)
+ POST /api/admin/disponibilites 200 in 53ms (next.js: 2ms, application-code: 51ms)
+ POST /api/admin/disponibilites 200 in 54ms (next.js: 2ms, application-code: 52ms)
+ POST /api/admin/disponibilites 200 in 53ms (next.js: 2ms, application-code: 51ms)
+ POST /api/admin/disponibilites 200 in 57ms (next.js: 2ms, application-code: 55ms)
+ GET / 200 in 65ms (next.js: 35ms, application-code: 30ms)
+[browser] Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+ GET /services 200 in 69ms (next.js: 31ms, application-code: 38ms)
+ GET / 200 in 26ms (next.js: 4ms, application-code: 22ms)
+ GET /realisations 200 in 51ms (next.js: 33ms, application-code: 18ms)
+ GET /api/admin/photos 200 in 167ms (next.js: 1960µs, application-code: 165ms)
+ GET /api/admin/photos 200 in 87ms (next.js: 3ms, application-code: 85ms)
+ GET /reservation 200 in 18ms (next.js: 4ms, application-code: 14ms)
+ GET /realisations 200 in 19ms (next.js: 4ms, application-code: 15ms)
+ GET /api/admin/photos 200 in 74ms (next.js: 1893µs, application-code: 72ms)
+ GET /api/admin/photos 200 in 83ms (next.js: 3ms, application-code: 80ms)
+ GET /admin 200 in 21ms (next.js: 5ms, proxy.ts: 4ms, application-code: 13ms)
+ GET /api/admin/disponibilites 200 in 159ms (next.js: 2ms, application-code: 157ms)
+ GET /api/admin/clients 200 in 181ms (next.js: 9ms, application-code: 171ms)
+ GET /api/admin/reservations 200 in 183ms (next.js: 4ms, application-code: 179ms)
+ GET /api/admin/photos 200 in 188ms (next.js: 2ms, application-code: 186ms)
+ GET /api/admin/disponibilites 200 in 65ms (next.js: 3ms, application-code: 62ms)
+ GET /api/admin/clients 200 in 69ms (next.js: 8ms, application-code: 62ms)
+ GET /api/admin/reservations 200 in 61ms (next.js: 1908µs, application-code: 59ms)
+ GET /api/admin/photos 200 in 95ms (next.js: 1996µs, application-code: 93ms)
+ GET /realisations 200 in 17ms (next.js: 4ms, application-code: 14ms)
+ GET /api/admin/photos 200 in 90ms (next.js: 3ms, application-code: 88ms)
+ GET /api/admin/photos 200 in 95ms (next.js: 2ms, application-code: 93ms)
+ GET /services 200 in 40ms (next.js: 4ms, application-code: 36ms)
+ GET / 200 in 29ms (next.js: 5ms, application-code: 25ms)
+✓ Compiled in 79ms
+ GET / 200 in 153ms (next.js: 104ms, application-code: 49ms)
+ GET / 200 in 31ms (next.js: 4ms, application-code: 27ms)
+ GET /services 200 in 49ms (next.js: 11ms, application-code: 38ms)
+✓ Compiled in 85ms
+ GET /services 200 in 99ms (next.js: 48ms, application-code: 52ms)
+ GET /services 200 in 156ms (next.js: 4ms, application-code: 151ms)
+ GET /services 200 in 157ms (next.js: 46ms, application-code: 111ms)
+ GET /services 200 in 76ms (next.js: 4ms, application-code: 72ms)
+✓ Compiled in 103ms
+⨯ ReferenceError: Euro is not defined
+    at ServicesPage (app\services\page.tsx:207:28)
+  205 |               <div className="grid grid-cols-2 gap-4 mb-8">
+  206 |                 {[
+> 207 |                   { icon: <Euro size={20} className="text-[#c0392b]" />, label: "285 €/an...
+      |                            ^
+  208 |                   { icon: <Droplets size={20} className="text-[#c0392b]" />, label: "Sans...
+  209 |                   { icon: <ShieldCheck size={20} className="text-[#c0392b]" />, label: "C...
+  210 |                   { icon: <Wrench size={20} className="text-[#c0392b]" />, label: "1 inte... {
+  digest: '2871131188'
+}
+ GET /services 200 in 145ms (next.js: 101ms, application-code: 44ms)
+⨯ ReferenceError: Euro is not defined
+    at ServicesPage (app\services\page.tsx:207:28)
+  205 |               <div className="grid grid-cols-2 gap-4 mb-8">
+  206 |                 {[
+> 207 |                   { icon: <Euro size={20} className="text-[#c0392b]" />, label: "285 €/an...
+      |                            ^
+  208 |                   { icon: <Droplets size={20} className="text-[#c0392b]" />, label: "Sans...
+  209 |                   { icon: <ShieldCheck size={20} className="text-[#c0392b]" />, label: "C...
+  210 |                   { icon: <Wrench size={20} className="text-[#c0392b]" />, label: "1 inte... {
+  digest: '2871131188'
+}
+ GET /services 200 in 32ms (next.js: 4ms, application-code: 28ms)
+[browser] Uncaught ReferenceError: Euro is not defined
+    at ServicesPage (app\services\page.tsx:207:28)
+  205 |               <div className="grid grid-cols-2 gap-4 mb-8">
+  206 |                 {[
+> 207 |                   { icon: <Euro size={20} className="text-[#c0392b]" />, label: "285 €/an...
+      |                            ^
+  208 |                   { icon: <Droplets size={20} className="text-[#c0392b]" />, label: "Sans...
+  209 |                   { icon: <ShieldCheck size={20} className="text-[#c0392b]" />, label: "C...
+  210 |                   { icon: <Wrench size={20} className="text-[#c0392b]" />, label: "1 inte...
+✓ Compiled in 117ms
+ GET /services 200 in 324ms (next.js: 105ms, application-code: 219ms)
+✓ Compiled in 69ms
+ GET /services 200 in 164ms (next.js: 105ms, application-code: 59ms)
+ GET /services 200 in 47ms (next.js: 5ms, application-code: 43ms)
+✓ Compiled in 54ms
+ GET /services 200 in 164ms (next.js: 99ms, application-code: 65ms)
+ GET /services 200 in 47ms (next.js: 4ms, application-code: 43ms)
+ GET / 200 in 129ms (next.js: 99ms, application-code: 30ms)
+[browser] Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+✓ Compiled in 153ms
+ GET / 200 in 183ms (next.js: 123ms, application-code: 60ms)
+ GET / 200 in 118ms (next.js: 24ms, application-code: 94ms)
+ GET / 200 in 119ms (next.js: 3ms, application-code: 116ms)
+✓ Compiled in 68ms
+ GET / 200 in 150ms (next.js: 110ms, application-code: 40ms)
+ GET / 200 in 39ms (next.js: 4ms, application-code: 35ms)
+ GET /services 200 in 47ms (next.js: 9ms, application-code: 38ms)
+[browser] Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+✓ Compiled in 68ms
+ GET /services 200 in 168ms (next.js: 110ms, application-code: 58ms)
+ GET /services 200 in 45ms (next.js: 4ms, application-code: 41ms)
+ GET / 200 in 31ms (next.js: 10ms, application-code: 21ms)
+ GET /services 200 in 40ms (next.js: 4ms, application-code: 36ms)
+✓ Compiled in 66ms
+ GET /services 200 in 177ms (next.js: 110ms, application-code: 67ms)
+ GET /services 200 in 47ms (next.js: 4ms, application-code: 44ms)
+ GET /services 200 in 106ms (next.js: 52ms, application-code: 54ms)
+✓ Compiled in 93ms
+ GET /services 200 in 158ms (next.js: 102ms, application-code: 56ms)
+ GET /services 200 in 140ms (next.js: 4ms, application-code: 136ms)
+ GET /services 200 in 140ms (next.js: 44ms, application-code: 96ms)
+ GET /services 200 in 51ms (next.js: 4ms, application-code: 47ms)
+✓ Compiled in 69ms
+⨯ ReferenceError: Droplet is not defined
+    at module evaluation (app\services\page.tsx:7:12)
+    at module evaluation (D:\laus-chauffage\.next\dev\server\chunks\ssr\[root-of-the-server]__0b_25ku._.js:870:47)
+   5 | const services: { icon: React.ReactNode; title: string; freq: string; price: string; point...
+   6 |   {
+>  7 |     icon: <Droplet size={40} className="text-[#c0392b]" />,
+     |            ^
+   8 |     title: "Entretien chaudière mazout",
+   9 |     freq: "Annuel (obligatoire)",
+  10 |     price: "À partir de 145€ TVAC",
+⨯ ReferenceError: Droplet is not defined
+    at module evaluation (app\services\page.tsx:7:12)
+    at module evaluation (D:\laus-chauffage\.next\dev\server\chunks\ssr\[root-of-the-server]__0b_25ku._.js:870:47)
+   5 | const services: { icon: React.ReactNode; title: string; freq: string; price: string; point...
+   6 |   {
+>  7 |     icon: <Droplet size={40} className="text-[#c0392b]" />,
+     |            ^
+   8 |     title: "Entretien chaudière mazout",
+   9 |     freq: "Annuel (obligatoire)",
+  10 |     price: "À partir de 145€ TVAC", {
+  page: '/services'
+}
+ GET /services 500 in 710ms (next.js: 691ms, application-code: 19ms)
+⨯ ReferenceError: Droplet is not defined
+    at module evaluation (app\services\page.tsx:7:12)
+    at module evaluation (D:\laus-chauffage\.next\dev\server\chunks\ssr\[root-of-the-server]__0b_25ku._.js:870:47)
+   5 | const services: { icon: React.ReactNode; title: string; freq: string; price: string; point...
+   6 |   {
+>  7 |     icon: <Droplet size={40} className="text-[#c0392b]" />,
+     |            ^
+   8 |     title: "Entretien chaudière mazout",
+   9 |     freq: "Annuel (obligatoire)",
+  10 |     price: "À partir de 145€ TVAC", {
+  page: '/services'
+}
+⨯ ReferenceError: Droplet is not defined
+    at module evaluation (app\services\page.tsx:7:12)
+    at module evaluation (D:\laus-chauffage\.next\dev\server\chunks\ssr\[root-of-the-server]__0b_25ku._.js:870:47)
+   5 | const services: { icon: React.ReactNode; title: string; freq: string; price: string; point...
+   6 |   {
+>  7 |     icon: <Droplet size={40} className="text-[#c0392b]" />,
+     |            ^
+   8 |     title: "Entretien chaudière mazout",
+   9 |     freq: "Annuel (obligatoire)",
+  10 |     price: "À partir de 145€ TVAC", {
+  page: '/services'
+}
+ GET /services 500 in 475ms (next.js: 468ms, application-code: 7ms)
+[browser] Uncaught ReferenceError: Droplet is not defined
+    at module evaluation (app/services/page.tsx:7:12)
+    at module evaluation (app/services/page.tsx:251:1)
+   5 | const services: { icon: React.ReactNode; title: string; freq: string; price: string; point...
+   6 |   {
+>  7 |     icon: <Droplet size={40} className="text-[#c0392b]" />,
+     |            ^
+   8 |     title: "Entretien chaudière mazout",
+   9 |     freq: "Annuel (obligatoire)",
+  10 |     price: "À partir de 145€ TVAC",
+✓ Compiled in 104ms
+ GET /services 200 in 298ms (next.js: 103ms, application-code: 196ms)
+✓ Compiled in 56ms
+ GET /services 200 in 227ms (next.js: 105ms, application-code: 122ms)
+ GET /services 200 in 56ms (next.js: 5ms, application-code: 51ms)
+✓ Compiled in 108ms
+ GET /services 200 in 167ms (next.js: 108ms, application-code: 59ms)
+ GET /services 200 in 60ms (next.js: 4ms, application-code: 55ms)
+ GET /services 200 in 78ms (next.js: 5ms, application-code: 73ms)
+ GET /services 200 in 44ms (next.js: 4ms, application-code: 40ms)
+✓ Compiled in 67ms
+ GET /services 200 in 159ms (next.js: 101ms, application-code: 59ms)
+ GET /services 200 in 47ms (next.js: 4ms, application-code: 44ms)
+ GET /services 200 in 46ms (next.js: 4ms, application-code: 42ms)
+ GET /services 200 in 53ms (next.js: 4ms, application-code: 49ms)
+✓ Compiled in 68ms
+ GET /services 200 in 154ms (next.js: 100ms, application-code: 54ms)
+ GET /services 200 in 51ms (next.js: 4ms, application-code: 47ms)
+✓ Compiled in 69ms
+ GET /services 200 in 161ms (next.js: 105ms, application-code: 57ms)
+ GET /services 200 in 51ms (next.js: 4ms, application-code: 47ms)
+✓ Compiled in 62ms
+ GET /services 200 in 232ms (next.js: 109ms, application-code: 122ms)
+ GET /services 200 in 94ms (next.js: 4ms, application-code: 90ms)
+✓ Compiled in 74ms
+ GET /services 200 in 195ms (next.js: 124ms, application-code: 71ms)
+ GET /services 200 in 52ms (next.js: 4ms, application-code: 48ms)
+✓ Compiled in 62ms
+ GET /services 200 in 167ms (next.js: 105ms, application-code: 62ms)
+ GET /services 200 in 52ms (next.js: 4ms, application-code: 49ms)
+[browser] Encountered two children with the same key, `Adoucisseur d'eau`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version. 
+✓ Compiled in 93ms
+ GET /services 200 in 165ms (next.js: 104ms, application-code: 62ms)
+ GET /services 200 in 92ms (next.js: 5ms, application-code: 87ms)
+ GET /services 200 in 8ms (next.js: 4ms, application-code: 5ms)
+ GET /services 200 in 39ms (next.js: 3ms, application-code: 36ms)
+ GET / 200 in 37ms (next.js: 14ms, application-code: 23ms)
+[browser] Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+ GET / 200 in 1298ms (next.js: 498ms, application-code: 799ms)
+ GET / 200 in 91ms (next.js: 52ms, application-code: 39ms)
+ GET / 200 in 36ms (next.js: 3ms, application-code: 32ms)
+ GET / 200 in 38ms (next.js: 5ms, application-code: 33ms)
+ GET /services 200 in 49ms (next.js: 9ms, application-code: 40ms)
+✓ Compiled in 141ms
+ GET /services 200 in 139ms (next.js: 70ms, application-code: 69ms)
+ GET /services 200 in 100ms (next.js: 11ms, application-code: 88ms)
+ GET /services 200 in 49ms (next.js: 4ms, application-code: 45ms)
+ GET /services 200 in 50ms (next.js: 4ms, application-code: 46ms)
+ GET /services 200 in 52ms (next.js: 4ms, application-code: 49ms)
+ GET /services 200 in 74ms (next.js: 4ms, application-code: 70ms)
+ GET /services 200 in 53ms (next.js: 4ms, application-code: 50ms)
+ GET /services 200 in 308ms (next.js: 4ms, application-code: 304ms)
+ GET /services 200 in 308ms (next.js: 49ms, application-code: 259ms)
+ GET /services 200 in 308ms (next.js: 5ms, application-code: 303ms)
+ GET /services 200 in 257ms (next.js: 6ms, application-code: 251ms)
+ GET /services 200 in 256ms (next.js: 95ms, application-code: 160ms)
+ GET /services 200 in 257ms (next.js: 49ms, application-code: 208ms)
+ GET /services 200 in 307ms (next.js: 4ms, application-code: 303ms)
+ GET /services 200 in 307ms (next.js: 49ms, application-code: 258ms)
+ GET /services 200 in 309ms (next.js: 4ms, application-code: 305ms)
+ GET /services 200 in 258ms (next.js: 5ms, application-code: 253ms)
+ GET /services 200 in 259ms (next.js: 51ms, application-code: 208ms)
+ GET /services 200 in 260ms (next.js: 97ms, application-code: 163ms)
+ GET /services 200 in 311ms (next.js: 7ms, application-code: 305ms)
+ GET /services 200 in 312ms (next.js: 54ms, application-code: 257ms)
+ GET /services 200 in 323ms (next.js: 10ms, application-code: 314ms)
+ GET /services 200 in 269ms (next.js: 5ms, application-code: 264ms)
+ GET /services 200 in 269ms (next.js: 95ms, application-code: 174ms)
+ GET /services 200 in 270ms (next.js: 50ms, application-code: 220ms)
+ GET /services 200 in 324ms (next.js: 5ms, application-code: 318ms)
+ GET /services 200 in 324ms (next.js: 59ms, application-code: 266ms)
+ GET /services 200 in 318ms (next.js: 6ms, application-code: 312ms)
+ GET /services 200 in 269ms (next.js: 6ms, application-code: 263ms)
+ GET /services 200 in 268ms (next.js: 49ms, application-code: 219ms)
+ GET /services 200 in 224ms (next.js: 52ms, application-code: 172ms)
+ GET /services 200 in 331ms (next.js: 4ms, application-code: 327ms)
+ GET /services 200 in 282ms (next.js: 12ms, application-code: 270ms)
+ GET /services 200 in 272ms (next.js: 5ms, application-code: 267ms)
+ GET /services 200 in 319ms (next.js: 50ms, application-code: 269ms)
+ GET /services 200 in 276ms (next.js: 55ms, application-code: 221ms)
+ GET /services 200 in 226ms (next.js: 52ms, application-code: 174ms)
+ GET /services 200 in 306ms (next.js: 4ms, application-code: 302ms)
+ GET /services 200 in 258ms (next.js: 5ms, application-code: 254ms)
+ GET /services 200 in 308ms (next.js: 5ms, application-code: 303ms)
+ GET /services 200 in 262ms (next.js: 5ms, application-code: 257ms)
+ GET /services 200 in 263ms (next.js: 49ms, application-code: 214ms)
+ GET /services 200 in 264ms (next.js: 92ms, application-code: 172ms)
+ GET /services 200 in 322ms (next.js: 5ms, application-code: 317ms)
+ GET /services 200 in 277ms (next.js: 4ms, application-code: 273ms)
+ GET /services 200 in 275ms (next.js: 6ms, application-code: 270ms)
+ GET /services 200 in 273ms (next.js: 6ms, application-code: 268ms)
+ GET /services 200 in 273ms (next.js: 52ms, application-code: 222ms)
+ GET /services 200 in 320ms (next.js: 94ms, application-code: 226ms)
+ GET /services 200 in 310ms (next.js: 5ms, application-code: 306ms)
+ GET /services 200 in 255ms (next.js: 5ms, application-code: 250ms)
+ GET /services 200 in 258ms (next.js: 5ms, application-code: 253ms)
+ GET /services 200 in 260ms (next.js: 5ms, application-code: 255ms)
+ GET /services 200 in 259ms (next.js: 49ms, application-code: 210ms)
+ GET /services 200 in 218ms (next.js: 12ms, application-code: 206ms)
+ GET /services 200 in 158ms (next.js: 5ms, application-code: 153ms)
+ GET /services 200 in 107ms (next.js: 5ms, application-code: 102ms)
+ GET /services 200 in 56ms (next.js: 4ms, application-code: 52ms)
+✓ Compiled in 64ms
+ GET /services 200 in 178ms (next.js: 109ms, application-code: 69ms)
+ GET /services 200 in 55ms (next.js: 4ms, application-code: 51ms)
+ GET /services/thermostat-connecte 200 in 383ms (next.js: 349ms, application-code: 34ms)
+✓ Compiled in 56ms
+ GET /services/thermostat-connecte 200 in 168ms (next.js: 116ms, application-code: 52ms)
+ GET /services/thermostat-connecte 200 in 41ms (next.js: 4ms, application-code: 37ms)
+ GET /services 200 in 55ms (next.js: 9ms, application-code: 46ms)
+✓ Compiled in 68ms
+ GET /services 200 in 174ms (next.js: 104ms, application-code: 70ms)
+ GET /services 200 in 92ms (next.js: 8ms, application-code: 85ms)
+ GET / 200 in 70ms (next.js: 10ms, application-code: 60ms)
+ GET / 200 in 26ms (next.js: 4ms, application-code: 23ms)
+ GET / 200 in 27ms (next.js: 4ms, application-code: 23ms)
+✓ Compiled in 129ms
+ GET / 200 in 156ms (next.js: 109ms, application-code: 47ms)
+ GET / 200 in 34ms (next.js: 4ms, application-code: 31ms)
+ GET / 200 in 35ms (next.js: 4ms, application-code: 31ms)
+ GET / 200 in 37ms (next.js: 4ms, application-code: 34ms)
+✓ Compiled in 118ms
+ GET / 200 in 146ms (next.js: 102ms, application-code: 44ms)
+ GET / 200 in 38ms (next.js: 4ms, application-code: 35ms)
+ GET / 200 in 78ms (next.js: 6ms, application-code: 72ms)
+ GET / 200 in 33ms (next.js: 5ms, application-code: 29ms)
+ GET /services 200 in 54ms (next.js: 9ms, application-code: 45ms)
+ GET / 200 in 33ms (next.js: 5ms, application-code: 29ms)
+✓ Compiled in 111ms
+ GET / 200 in 116ms (next.js: 75ms, application-code: 41ms)
+ GET / 200 in 33ms (next.js: 5ms, application-code: 28ms)
+ GET / 200 in 33ms (next.js: 5ms, application-code: 28ms)
+ GET / 200 in 34ms (next.js: 4ms, application-code: 31ms)
+ GET / 200 in 32ms (next.js: 4ms, application-code: 28ms)
+ GET / 200 in 33ms (next.js: 4ms, application-code: 30ms)
+ GET / 200 in 36ms (next.js: 4ms, application-code: 32ms)
+ GET / 200 in 43ms (next.js: 5ms, application-code: 38ms)
+ GET / 200 in 35ms (next.js: 4ms, application-code: 31ms)
+ GET / 200 in 39ms (next.js: 4ms, application-code: 35ms)
+ GET / 200 in 62ms (next.js: 11ms, application-code: 50ms)
+ GET / 200 in 32ms (next.js: 4ms, application-code: 29ms)
+ GET / 200 in 45ms (next.js: 4ms, application-code: 41ms)
+ GET / 200 in 79ms (next.js: 4ms, application-code: 75ms)
+ GET / 200 in 32ms (next.js: 4ms, application-code: 28ms)
+ GET / 200 in 30ms (next.js: 3ms, application-code: 27ms)
+ GET / 200 in 33ms (next.js: 4ms, application-code: 29ms)
+ GET / 200 in 35ms (next.js: 4ms, application-code: 31ms)
+ GET / 200 in 31ms (next.js: 3ms, application-code: 28ms)
+ GET / 200 in 31ms (next.js: 3ms, application-code: 28ms)
+ GET / 200 in 35ms (next.js: 4ms, application-code: 31ms)
+ GET / 200 in 32ms (next.js: 4ms, application-code: 28ms)
+ GET / 200 in 32ms (next.js: 4ms, application-code: 29ms)
+ GET / 200 in 34ms (next.js: 3ms, application-code: 30ms)
+ GET / 200 in 32ms (next.js: 4ms, application-code: 28ms)
+ GET / 200 in 31ms (next.js: 4ms, application-code: 28ms)
+ GET / 200 in 36ms (next.js: 3ms, application-code: 32ms)
+ GET / 200 in 35ms (next.js: 4ms, application-code: 31ms)
+ GET / 200 in 33ms (next.js: 4ms, application-code: 29ms)
+ GET / 200 in 32ms (next.js: 3ms, application-code: 28ms)
+ GET / 200 in 32ms (next.js: 3ms, application-code: 29ms)
+ GET / 200 in 33ms (next.js: 4ms, application-code: 29ms)
+ GET / 200 in 33ms (next.js: 4ms, application-code: 30ms)
+ GET / 200 in 39ms (next.js: 4ms, application-code: 35ms)
+ GET / 200 in 36ms (next.js: 4ms, application-code: 32ms)
+ GET / 200 in 34ms (next.js: 4ms, application-code: 31ms)
+ GET / 200 in 36ms (next.js: 4ms, application-code: 32ms)
+ GET / 200 in 35ms (next.js: 4ms, application-code: 31ms)
+ GET / 200 in 36ms (next.js: 5ms, application-code: 31ms)
+ GET / 200 in 40ms (next.js: 4ms, application-code: 36ms)
+ GET / 200 in 32ms (next.js: 4ms, application-code: 28ms)
+ GET / 200 in 33ms (next.js: 3ms, application-code: 30ms)
+ GET / 200 in 34ms (next.js: 4ms, application-code: 30ms)
+ GET / 200 in 32ms (next.js: 4ms, application-code: 29ms)
+ GET / 200 in 32ms (next.js: 4ms, application-code: 28ms)
+ GET / 200 in 39ms (next.js: 4ms, application-code: 35ms)
+ GET / 200 in 39ms (next.js: 5ms, application-code: 34ms)
+ GET / 200 in 33ms (next.js: 4ms, application-code: 29ms)
+ GET / 200 in 34ms (next.js: 4ms, application-code: 30ms)
+ GET / 200 in 31ms (next.js: 4ms, application-code: 27ms)
+ GET / 200 in 32ms (next.js: 4ms, application-code: 28ms)
+ GET / 200 in 33ms (next.js: 4ms, application-code: 28ms)
+ GET / 200 in 39ms (next.js: 8ms, application-code: 31ms)
+ GET / 200 in 32ms (next.js: 4ms, application-code: 28ms)
+ GET / 200 in 31ms (next.js: 3ms, application-code: 28ms)
+ GET / 200 in 34ms (next.js: 3ms, application-code: 31ms)
+ GET / 200 in 35ms (next.js: 4ms, application-code: 31ms)
+ GET / 200 in 35ms (next.js: 4ms, application-code: 31ms)
+ GET / 200 in 44ms (next.js: 5ms, application-code: 39ms)
+ GET / 200 in 34ms (next.js: 4ms, application-code: 30ms)
+✓ Compiled in 68ms
+ GET / 200 in 99ms (next.js: 57ms, application-code: 42ms)
+ GET / 200 in 41ms (next.js: 10ms, application-code: 31ms)
+ GET /services 200 in 167ms (next.js: 108ms, application-code: 60ms)
+ GET /services/radiateur 200 in 337ms (next.js: 303ms, application-code: 34ms)
+✓ Compiled in 61ms
+ GET /services/radiateur 200 in 134ms (next.js: 86ms, application-code: 48ms)
+ GET /services/radiateur 200 in 38ms (next.js: 4ms, application-code: 35ms)
+✓ Compiled in 46ms
+ GET /services/radiateur 200 in 130ms (next.js: 87ms, application-code: 43ms)
+ GET /services/radiateur 200 in 38ms (next.js: 4ms, application-code: 34ms)
+✓ Compiled in 96ms
+ GET /services/radiateur 200 in 124ms (next.js: 82ms, application-code: 42ms)
+ GET /services/radiateur 200 in 87ms (next.js: 6ms, application-code: 80ms)
+✓ Compiled in 98ms
+ GET /services/radiateur 200 in 142ms (next.js: 96ms, application-code: 46ms)
+ GET /services/radiateur 200 in 44ms (next.js: 4ms, application-code: 40ms)
+✓ Compiled in 52ms
+ GET /services/radiateur 200 in 137ms (next.js: 92ms, application-code: 45ms)
+ GET /services/radiateur 200 in 42ms (next.js: 4ms, application-code: 38ms)
+✓ Compiled in 52ms
+ GET /services/radiateur 200 in 125ms (next.js: 85ms, application-code: 39ms)
+ GET /services/radiateur 200 in 41ms (next.js: 4ms, application-code: 38ms)
+✓ Compiled in 53ms
+ GET /services/radiateur 200 in 128ms (next.js: 83ms, application-code: 45ms)
+ GET /services/radiateur 200 in 35ms (next.js: 4ms, application-code: 32ms)
+ GET /realisations 200 in 28ms (next.js: 13ms, application-code: 15ms)
+ GET /api/admin/photos 200 in 346ms (next.js: 50ms, application-code: 296ms)
+ GET /api/admin/photos 200 in 79ms (next.js: 2ms, application-code: 77ms)
+ GET /services 200 in 49ms (next.js: 9ms, application-code: 40ms)
+ GET / 200 in 31ms (next.js: 9ms, application-code: 22ms)
+ GET /services 200 in 42ms (next.js: 4ms, application-code: 38ms)
+✓ Compiled in 82ms
+ GET /services 200 in 153ms (next.js: 91ms, application-code: 62ms)
+ GET /services 200 in 51ms (next.js: 4ms, application-code: 47ms)
+ GET /services 200 in 102ms (next.js: 45ms, application-code: 57ms)
+ GET /services 200 in 359ms (next.js: 5ms, application-code: 354ms)
+ GET /services 200 in 362ms (next.js: 52ms, application-code: 310ms)
+ GET /services 200 in 356ms (next.js: 5ms, application-code: 351ms)
+ GET /services 200 in 356ms (next.js: 46ms, application-code: 310ms)
+ GET /services 200 in 357ms (next.js: 91ms, application-code: 266ms)
+ GET /services 200 in 271ms (next.js: 52ms, application-code: 219ms)
+ GET /services 200 in 301ms (next.js: 4ms, application-code: 297ms)
+ GET /services 200 in 258ms (next.js: 5ms, application-code: 253ms)
+ GET /services 200 in 304ms (next.js: 5ms, application-code: 299ms)
+ GET /services 200 in 305ms (next.js: 54ms, application-code: 250ms)
+ GET /services 200 in 255ms (next.js: 49ms, application-code: 206ms)
+ GET /services 200 in 210ms (next.js: 50ms, application-code: 160ms)
+ GET /services 200 in 300ms (next.js: 5ms, application-code: 295ms)
+ GET /services 200 in 256ms (next.js: 8ms, application-code: 247ms)
+ GET /services 200 in 360ms (next.js: 5ms, application-code: 354ms)
+ GET /services 200 in 359ms (next.js: 48ms, application-code: 311ms)
+ GET /services 200 in 316ms (next.js: 54ms, application-code: 262ms)
+ GET /services 200 in 268ms (next.js: 49ms, application-code: 219ms)
+ GET /services 200 in 375ms (next.js: 6ms, application-code: 369ms)
+ GET /services 200 in 374ms (next.js: 54ms, application-code: 320ms)
+ GET /services 200 in 311ms (next.js: 5ms, application-code: 305ms)
+ GET /services 200 in 262ms (next.js: 6ms, application-code: 256ms)
+ GET /services 200 in 261ms (next.js: 53ms, application-code: 209ms)
+ GET /services 200 in 260ms (next.js: 53ms, application-code: 206ms)
+ GET /services 200 in 303ms (next.js: 4ms, application-code: 299ms)
+ GET /services 200 in 258ms (next.js: 4ms, application-code: 253ms)
+ GET /services 200 in 303ms (next.js: 4ms, application-code: 298ms)
+ GET /services 200 in 257ms (next.js: 5ms, application-code: 252ms)
+ GET /services 200 in 256ms (next.js: 50ms, application-code: 206ms)
+ GET /services 200 in 203ms (next.js: 4ms, application-code: 199ms)
+ GET /services 200 in 308ms (next.js: 5ms, application-code: 303ms)
+ GET /services 200 in 261ms (next.js: 5ms, application-code: 257ms)
+ GET /services 200 in 320ms (next.js: 4ms, application-code: 316ms)
+ GET /services 200 in 274ms (next.js: 13ms, application-code: 261ms)
+ GET /services 200 in 275ms (next.js: 62ms, application-code: 213ms)
+ GET /services 200 in 173ms (next.js: 5ms, application-code: 168ms)
+ GET /services 200 in 337ms (next.js: 5ms, application-code: 333ms)
+ GET /services 200 in 337ms (next.js: 50ms, application-code: 287ms)
+ GET /services 200 in 350ms (next.js: 6ms, application-code: 344ms)
+ GET /services 200 in 351ms (next.js: 57ms, application-code: 294ms)
+ GET /services 200 in 246ms (next.js: 7ms, application-code: 240ms)
+ GET /services 200 in 246ms (next.js: 57ms, application-code: 189ms)
+ GET /services 200 in 348ms (next.js: 7ms, application-code: 342ms)
+ GET /services 200 in 349ms (next.js: 61ms, application-code: 287ms)
+ GET /services 200 in 334ms (next.js: 5ms, application-code: 328ms)
+ GET /services 200 in 279ms (next.js: 56ms, application-code: 223ms)
+ GET /services 200 in 282ms (next.js: 7ms, application-code: 274ms)
+ GET /services 200 in 179ms (next.js: 7ms, application-code: 172ms)
+ GET /services 200 in 325ms (next.js: 6ms, application-code: 320ms)
+ GET /services 200 in 325ms (next.js: 52ms, application-code: 273ms)
+ GET /services 200 in 320ms (next.js: 4ms, application-code: 315ms)
+ GET /services 200 in 320ms (next.js: 59ms, application-code: 261ms)
+ GET /services 200 in 267ms (next.js: 53ms, application-code: 214ms)
+ GET /services 200 in 220ms (next.js: 53ms, application-code: 167ms)
+ GET /services 200 in 304ms (next.js: 4ms, application-code: 300ms)
+ GET /services 200 in 257ms (next.js: 4ms, application-code: 253ms)
+ GET /services 200 in 249ms (next.js: 50ms, application-code: 199ms)
+ GET /services 200 in 251ms (next.js: 6ms, application-code: 245ms)
+ GET /services 200 in 158ms (next.js: 5ms, application-code: 153ms)
+ GET /services 200 in 157ms (next.js: 49ms, application-code: 108ms)
+ GET /services 200 in 59ms (next.js: 4ms, application-code: 55ms)
+✓ Compiled in 87ms
+ GET /services 200 in 140ms (next.js: 85ms, application-code: 54ms)
+ GET /services 200 in 51ms (next.js: 5ms, application-code: 46ms)
+ GET /services/chaudiere-gaz 200 in 342ms (next.js: 309ms, application-code: 33ms)
+✓ Compiled in 50ms
+ GET /services/chaudiere-gaz 200 in 130ms (next.js: 86ms, application-code: 44ms)
+ GET /services/chaudiere-gaz 200 in 58ms (next.js: 4ms, application-code: 53ms)
+✓ Compiled in 57ms
+ GET /services/chaudiere-gaz 200 in 142ms (next.js: 92ms, application-code: 50ms)
+ GET /services/chaudiere-gaz 200 in 44ms (next.js: 6ms, application-code: 39ms)
+✓ Compiled in 47ms
+ GET /services/chaudiere-gaz 200 in 132ms (next.js: 88ms, application-code: 44ms)
+ GET /services/chaudiere-gaz 200 in 48ms (next.js: 4ms, application-code: 44ms)
+✓ Compiled in 52ms
+ GET /services/chaudiere-gaz 200 in 132ms (next.js: 83ms, application-code: 48ms)
+ GET /services/chaudiere-gaz 200 in 38ms (next.js: 4ms, application-code: 34ms)
+✓ Compiled in 55ms
+ GET /services/chaudiere-gaz 200 in 157ms (next.js: 92ms, application-code: 65ms)
+ GET /services/chaudiere-gaz 200 in 102ms (next.js: 8ms, application-code: 94ms)
+✓ Compiled in 52ms
+ GET /services/chaudiere-gaz 200 in 130ms (next.js: 86ms, application-code: 44ms)
+ GET /services/chaudiere-gaz 200 in 45ms (next.js: 4ms, application-code: 41ms)
+ GET / 200 in 40ms (next.js: 15ms, application-code: 26ms)
+ GET /services 200 in 54ms (next.js: 8ms, application-code: 46ms)
+✓ Compiled in 94ms
+ GET /services 200 in 147ms (next.js: 92ms, application-code: 55ms)
+ GET /services 200 in 45ms (next.js: 4ms, application-code: 41ms)
+ GET /services 200 in 53ms (next.js: 4ms, application-code: 49ms)
+ GET /services 200 in 47ms (next.js: 4ms, application-code: 43ms)
+ GET /admin 200 in 148ms (next.js: 14ms, proxy.ts: 38ms, application-code: 96ms)
+ GET /api/admin/photos 200 in 376ms (next.js: 107ms, application-code: 269ms)
+ GET /api/admin/reservations 200 in 687ms (next.js: 49ms, application-code: 638ms)
+ GET /api/admin/disponibilites 200 in 689ms (next.js: 132ms, application-code: 556ms)
+ GET /api/admin/clients 200 in 693ms (next.js: 83ms, application-code: 610ms)
+ GET /admin 200 in 96ms (next.js: 44ms, proxy.ts: 22ms, application-code: 31ms)
+ GET /admin 200 in 31ms (next.js: 5ms, proxy.ts: 3ms, application-code: 23ms)
+ GET /admin 200 in 26ms (next.js: 4ms, proxy.ts: 3ms, application-code: 18ms)
+ GET /admin 200 in 26ms (next.js: 4ms, proxy.ts: 3ms, application-code: 18ms)
+ GET /admin 200 in 28ms (next.js: 4ms, proxy.ts: 4ms, application-code: 20ms)
+ GET /admin 200 in 29ms (next.js: 5ms, proxy.ts: 4ms, application-code: 21ms)
+ GET /admin 200 in 24ms (next.js: 4ms, proxy.ts: 3ms, application-code: 17ms)
+ GET /admin 200 in 25ms (next.js: 4ms, proxy.ts: 4ms, application-code: 18ms)
+ GET /admin 200 in 65ms (next.js: 5ms, proxy.ts: 4ms, application-code: 55ms)
+ GET /admin 200 in 64ms (next.js: 24ms, proxy.ts: 4ms, application-code: 36ms)
+ GET /admin 200 in 145ms (next.js: 11ms, proxy.ts: 9ms, application-code: 125ms)
+ GET /admin 200 in 143ms (next.js: 32ms, proxy.ts: 7ms, application-code: 104ms)
+ GET /admin 200 in 141ms (next.js: 50ms, proxy.ts: 6ms, application-code: 85ms)
+ GET /admin 200 in 143ms (next.js: 68ms, proxy.ts: 5ms, application-code: 70ms)
+ GET /admin 200 in 146ms (next.js: 10ms, proxy.ts: 82ms, application-code: 55ms)
+ GET /admin 200 in 125ms (next.js: 27ms, proxy.ts: 62ms, application-code: 36ms)
+ GET /admin 200 in 211ms (next.js: 11ms, proxy.ts: 8ms, application-code: 192ms)
+ GET /admin 200 in 208ms (next.js: 29ms, proxy.ts: 5ms, application-code: 174ms)
+ GET /admin 200 in 207ms (next.js: 73ms, proxy.ts: 4ms, application-code: 130ms)
+ GET /admin 200 in 212ms (next.js: 46ms, proxy.ts: 7ms, application-code: 160ms)
+ GET /admin 200 in 190ms (next.js: 9ms, proxy.ts: 28ms, application-code: 153ms)
+ GET /admin 200 in 192ms (next.js: 31ms, proxy.ts: 28ms, application-code: 133ms)
+ GET /admin 200 in 148ms (next.js: 13ms, proxy.ts: 7ms, application-code: 129ms)
+ GET /admin 200 in 146ms (next.js: 32ms, proxy.ts: 5ms, application-code: 108ms)
+ GET /admin 200 in 145ms (next.js: 50ms, proxy.ts: 5ms, application-code: 90ms)
+ GET /admin 200 in 145ms (next.js: 68ms, proxy.ts: 4ms, application-code: 73ms)
+ GET /admin 200 in 181ms (next.js: 7ms, proxy.ts: 45ms, application-code: 130ms)
+ GET /admin 200 in 169ms (next.js: 25ms, proxy.ts: 4ms, application-code: 141ms)
+ GET /admin 200 in 169ms (next.js: 13ms, proxy.ts: 5ms, application-code: 151ms)
+ GET /admin 200 in 168ms (next.js: 31ms, proxy.ts: 6ms, application-code: 131ms)
+ GET /admin 200 in 167ms (next.js: 47ms, proxy.ts: 5ms, application-code: 115ms)
+ GET /admin 200 in 166ms (next.js: 80ms, proxy.ts: 4ms, application-code: 82ms)
+ GET /admin 200 in 129ms (next.js: 7ms, proxy.ts: 4ms, application-code: 117ms)
+ GET /admin 200 in 148ms (next.js: 24ms, proxy.ts: 3ms, application-code: 121ms)
+ GET /admin 200 in 157ms (next.js: 11ms, proxy.ts: 4ms, application-code: 141ms)
+ GET /admin 200 in 156ms (next.js: 32ms, proxy.ts: 4ms, application-code: 120ms)
+ GET /admin 200 in 156ms (next.js: 47ms, proxy.ts: 5ms, application-code: 104ms)
+ GET /admin 200 in 156ms (next.js: 46ms, proxy.ts: 25ms, application-code: 85ms)
+ GET /admin 200 in 137ms (next.js: 8ms, proxy.ts: 4ms, application-code: 125ms)
+ GET /admin 200 in 157ms (next.js: 34ms, proxy.ts: 3ms, application-code: 120ms)
+ GET /admin 200 in 147ms (next.js: 13ms, proxy.ts: 5ms, application-code: 130ms)
+ GET /admin 200 in 148ms (next.js: 32ms, proxy.ts: 4ms, application-code: 112ms)
+ GET /admin 200 in 148ms (next.js: 47ms, proxy.ts: 5ms, application-code: 96ms)
+ GET /admin 200 in 151ms (next.js: 46ms, proxy.ts: 24ms, application-code: 81ms)
+ GET /admin 200 in 151ms (next.js: 9ms, proxy.ts: 3ms, application-code: 139ms)
+ GET /admin 200 in 151ms (next.js: 25ms, proxy.ts: 3ms, application-code: 123ms)
+ GET /admin 200 in 130ms (next.js: 13ms, proxy.ts: 8ms, application-code: 109ms)
+ GET /admin 200 in 145ms (next.js: 29ms, proxy.ts: 5ms, application-code: 111ms)
+ GET /admin 200 in 143ms (next.js: 48ms, proxy.ts: 4ms, application-code: 91ms)
+ GET /admin 200 in 143ms (next.js: 44ms, proxy.ts: 23ms, application-code: 76ms)
+ GET /admin 200 in 152ms (next.js: 7ms, proxy.ts: 3ms, application-code: 142ms)
+ GET /admin 200 in 168ms (next.js: 5ms, proxy.ts: 23ms, application-code: 140ms)
+ GET /admin 200 in 150ms (next.js: 13ms, proxy.ts: 3ms, application-code: 134ms)
+ GET /admin 200 in 169ms (next.js: 34ms, proxy.ts: 6ms, application-code: 129ms)
+ GET /admin 200 in 168ms (next.js: 54ms, proxy.ts: 5ms, application-code: 110ms)
+ GET /admin 200 in 168ms (next.js: 52ms, proxy.ts: 22ms, application-code: 95ms)
+ GET /admin 200 in 201ms (next.js: 13ms, proxy.ts: 12ms, application-code: 176ms)
+ GET /admin 200 in 163ms (next.js: 7ms, proxy.ts: 3ms, application-code: 153ms)
+ GET /admin 200 in 186ms (next.js: 14ms, proxy.ts: 23ms, application-code: 149ms)
+ GET /admin 200 in 162ms (next.js: 36ms, proxy.ts: 5ms, application-code: 121ms)
+ GET /admin 200 in 161ms (next.js: 73ms, proxy.ts: 5ms, application-code: 84ms)
+ GET /admin 200 in 178ms (next.js: 79ms, proxy.ts: 23ms, application-code: 76ms)
+ GET /admin 200 in 58ms (next.js: 6ms, proxy.ts: 3ms, application-code: 49ms)
+ GET /admin 200 in 30ms (next.js: 6ms, proxy.ts: 3ms, application-code: 20ms)
+✓ Compiled in 57ms
+ GET /admin 200 in 290ms (next.js: 95ms, proxy.ts: 15ms, application-code: 179ms)
+ GET /api/admin/photos 200 in 430ms (next.js: 227ms, application-code: 203ms)
+ GET /api/admin/clients 200 in 442ms (next.js: 201ms, application-code: 241ms)
+ GET /api/admin/reservations 200 in 446ms (next.js: 168ms, application-code: 278ms)
+ GET /api/admin/disponibilites 200 in 463ms (next.js: 252ms, application-code: 211ms)
+✓ Compiled in 114ms
+ GET /admin 200 in 134ms (next.js: 94ms, proxy.ts: 13ms, application-code: 27ms)
+ GET /admin 200 in 30ms (next.js: 4ms, proxy.ts: 3ms, application-code: 23ms)
+ GET /admin 200 in 31ms (next.js: 5ms, proxy.ts: 3ms, application-code: 23ms)
+✓ Compiled in 111ms
+ GET /admin 200 in 258ms (next.js: 201ms, proxy.ts: 22ms, application-code: 36ms)
+ GET /admin 200 in 106ms (next.js: 53ms, proxy.ts: 19ms, application-code: 34ms)
+✓ Compiled in 74ms
+ GET /admin 200 in 368ms (next.js: 103ms, proxy.ts: 14ms, application-code: 251ms)
+ GET /api/admin/photos 200 in 498ms (next.js: 335ms, application-code: 163ms)
+ GET /api/admin/clients 200 in 521ms (next.js: 268ms, application-code: 253ms)
+ GET /api/admin/reservations 200 in 525ms (next.js: 178ms, application-code: 347ms)
+ GET /api/admin/disponibilites 200 in 526ms (next.js: 308ms, application-code: 218ms)
+✓ Compiled in 116ms
+ GET /admin 200 in 130ms (next.js: 90ms, proxy.ts: 15ms, application-code: 26ms)
+ GET /admin 200 in 31ms (next.js: 4ms, proxy.ts: 3ms, application-code: 23ms)
+ GET /admin 200 in 25ms (next.js: 4ms, proxy.ts: 3ms, application-code: 18ms)
+ GET /admin 200 in 97ms (next.js: 55ms, proxy.ts: 15ms, application-code: 27ms)
+ GET /admin 200 in 71ms (next.js: 6ms, proxy.ts: 5ms, application-code: 60ms)
+ GET /admin 200 in 69ms (next.js: 27ms, proxy.ts: 4ms, application-code: 38ms)
+ GET /admin 200 in 159ms (next.js: 16ms, proxy.ts: 4ms, application-code: 140ms)
+ GET /admin 200 in 155ms (next.js: 34ms, proxy.ts: 6ms, application-code: 115ms)
+ GET /admin 200 in 152ms (next.js: 78ms, proxy.ts: 5ms, application-code: 69ms)
+ GET /admin 200 in 160ms (next.js: 56ms, proxy.ts: 5ms, application-code: 99ms)
+ GET /admin 200 in 138ms (next.js: 8ms, proxy.ts: 71ms, application-code: 59ms)
+ GET /admin 200 in 186ms (next.js: 28ms, proxy.ts: 70ms, application-code: 88ms)
+ GET /admin 200 in 164ms (next.js: 32ms, proxy.ts: 8ms, application-code: 124ms)
+ GET /admin 200 in 166ms (next.js: 13ms, proxy.ts: 7ms, application-code: 147ms)
+ GET /admin 200 in 163ms (next.js: 58ms, proxy.ts: 5ms, application-code: 99ms)
+ GET /admin 200 in 165ms (next.js: 82ms, proxy.ts: 4ms, application-code: 79ms)
+ GET /admin 200 in 137ms (next.js: 27ms, proxy.ts: 25ms, application-code: 85ms)
+ GET /admin 200 in 162ms (next.js: 27ms, proxy.ts: 27ms, application-code: 108ms)
+ GET /admin 200 in 196ms (next.js: 34ms, proxy.ts: 6ms, application-code: 156ms)
+ GET /admin 200 in 198ms (next.js: 13ms, proxy.ts: 7ms, application-code: 179ms)
+ GET /admin 200 in 194ms (next.js: 50ms, proxy.ts: 5ms, application-code: 138ms)
+ GET /admin 200 in 191ms (next.js: 110ms, proxy.ts: 4ms, application-code: 77ms)
+ GET /admin 200 in 155ms (next.js: 11ms, proxy.ts: 39ms, application-code: 104ms)
+ GET /admin 200 in 151ms (next.js: 31ms, proxy.ts: 35ms, application-code: 84ms)
+ GET /admin 200 in 178ms (next.js: 36ms, proxy.ts: 6ms, application-code: 136ms)
+ GET /admin 200 in 181ms (next.js: 13ms, proxy.ts: 6ms, application-code: 161ms)
+ GET /admin 200 in 178ms (next.js: 61ms, proxy.ts: 5ms, application-code: 112ms)
+ GET /admin 200 in 182ms (next.js: 87ms, proxy.ts: 4ms, application-code: 91ms)
+ GET /admin 200 in 255ms (next.js: 36ms, proxy.ts: 28ms, application-code: 191ms)
+ GET /admin 200 in 253ms (next.js: 59ms, proxy.ts: 27ms, application-code: 168ms)
+ GET /admin 200 in 238ms (next.js: 90ms, proxy.ts: 7ms, application-code: 142ms)
+ GET /admin 200 in 237ms (next.js: 110ms, proxy.ts: 8ms, application-code: 118ms)
+ GET /admin 200 in 234ms (next.js: 61ms, proxy.ts: 78ms, application-code: 96ms)
+ GET /admin 200 in 233ms (next.js: 79ms, proxy.ts: 77ms, application-code: 77ms)
+ GET /admin 200 in 133ms (next.js: 51ms, proxy.ts: 5ms, application-code: 78ms)
+ GET /admin 200 in 157ms (next.js: 26ms, proxy.ts: 48ms, application-code: 84ms)
+ GET /admin 200 in 161ms (next.js: 12ms, proxy.ts: 6ms, application-code: 144ms)
+ GET /admin 200 in 161ms (next.js: 33ms, proxy.ts: 5ms, application-code: 123ms)
+ GET /admin 200 in 158ms (next.js: 53ms, proxy.ts: 5ms, application-code: 100ms)
+ GET /admin 200 in 158ms (next.js: 55ms, proxy.ts: 26ms, application-code: 77ms)
+ GET /admin 200 in 117ms (next.js: 57ms, proxy.ts: 4ms, application-code: 55ms)
+ GET /admin 200 in 135ms (next.js: 31ms, proxy.ts: 24ms, application-code: 80ms)
+ GET /admin 200 in 156ms (next.js: 15ms, proxy.ts: 4ms, application-code: 138ms)
+ GET /admin 200 in 156ms (next.js: 34ms, proxy.ts: 5ms, application-code: 117ms)
+ GET /admin 200 in 155ms (next.js: 55ms, proxy.ts: 4ms, application-code: 96ms)
+ GET /admin 200 in 163ms (next.js: 55ms, proxy.ts: 24ms, application-code: 84ms)
+ GET /admin 200 in 143ms (next.js: 50ms, proxy.ts: 26ms, application-code: 66ms)
+ GET /admin 200 in 164ms (next.js: 48ms, proxy.ts: 24ms, application-code: 92ms)
+ GET /admin 200 in 162ms (next.js: 21ms, proxy.ts: 4ms, application-code: 137ms)
+ GET /admin 200 in 159ms (next.js: 43ms, proxy.ts: 3ms, application-code: 112ms)
+ GET /admin 200 in 162ms (next.js: 54ms, proxy.ts: 11ms, application-code: 97ms)
+ GET /admin 200 in 155ms (next.js: 54ms, proxy.ts: 27ms, application-code: 74ms)
+ GET /admin 200 in 154ms (next.js: 53ms, proxy.ts: 25ms, application-code: 77ms)
+ GET /admin 200 in 135ms (next.js: 48ms, proxy.ts: 4ms, application-code: 83ms)
+ GET /admin 200 in 165ms (next.js: 11ms, proxy.ts: 6ms, application-code: 148ms)
+ GET /admin 200 in 162ms (next.js: 33ms, proxy.ts: 4ms, application-code: 125ms)
+ GET /admin 200 in 165ms (next.js: 56ms, proxy.ts: 4ms, application-code: 105ms)
+ GET /admin 200 in 164ms (next.js: 55ms, proxy.ts: 24ms, application-code: 84ms)
+ GET /admin 200 in 141ms (next.js: 60ms, proxy.ts: 4ms, application-code: 77ms)
+ GET /admin 200 in 141ms (next.js: 28ms, proxy.ts: 30ms, application-code: 83ms)
+ GET /admin 200 in 158ms (next.js: 11ms, proxy.ts: 6ms, application-code: 141ms)
+ GET /admin 200 in 155ms (next.js: 33ms, proxy.ts: 4ms, application-code: 118ms)
+ GET /admin 200 in 165ms (next.js: 55ms, proxy.ts: 4ms, application-code: 106ms)
+ GET /admin 200 in 165ms (next.js: 54ms, proxy.ts: 25ms, application-code: 87ms)
+ GET /admin 200 in 146ms (next.js: 50ms, proxy.ts: 4ms, application-code: 91ms)
+ GET /admin 200 in 162ms (next.js: 26ms, proxy.ts: 23ms, application-code: 113ms)
+ GET /admin 200 in 91ms (next.js: 20ms, proxy.ts: 5ms, application-code: 66ms)
+ GET /admin 200 in 89ms (next.js: 34ms, proxy.ts: 13ms, application-code: 42ms)
+ GET /admin 200 in 75ms (next.js: 50ms, proxy.ts: 4ms, application-code: 21ms)
+ GET /admin 200 in 97ms (next.js: 45ms, proxy.ts: 22ms, application-code: 30ms)
+ GET /admin 200 in 34ms (next.js: 4ms, proxy.ts: 3ms, application-code: 26ms)
+ GET /admin 200 in 25ms (next.js: 4ms, proxy.ts: 3ms, application-code: 18ms)
+ GET /admin 200 in 25ms (next.js: 4ms, proxy.ts: 3ms, application-code: 18ms)
+ GET /admin 200 in 25ms (next.js: 4ms, proxy.ts: 3ms, application-code: 19ms)
+ GET /admin 200 in 27ms (next.js: 4ms, proxy.ts: 3ms, application-code: 20ms)
+ GET /admin 200 in 25ms (next.js: 4ms, proxy.ts: 3ms, application-code: 18ms)
+ GET /admin 200 in 25ms (next.js: 4ms, proxy.ts: 3ms, application-code: 18ms)
+ GET /admin 200 in 25ms (next.js: 4ms, proxy.ts: 3ms, application-code: 19ms)
+ GET /admin 200 in 28ms (next.js: 4ms, proxy.ts: 3ms, application-code: 21ms)
+ GET /admin 200 in 25ms (next.js: 4ms, proxy.ts: 3ms, application-code: 18ms)
+ GET /admin 200 in 24ms (next.js: 4ms, proxy.ts: 3ms, application-code: 17ms)
+ GET /admin 200 in 28ms (next.js: 5ms, proxy.ts: 3ms, application-code: 20ms)
+ GET /admin 200 in 30ms (next.js: 5ms, proxy.ts: 3ms, application-code: 22ms)
+ GET /admin 200 in 24ms (next.js: 4ms, proxy.ts: 3ms, application-code: 18ms)
+ GET /admin 200 in 25ms (next.js: 4ms, proxy.ts: 3ms, application-code: 18ms)
+ GET /admin 200 in 147ms (next.js: 26ms, proxy.ts: 4ms, application-code: 118ms)
+ GET /admin 200 in 150ms (next.js: 5ms, proxy.ts: 5ms, application-code: 140ms)
+ GET /admin 200 in 147ms (next.js: 7ms, proxy.ts: 9ms, application-code: 131ms)
+ GET /admin 200 in 148ms (next.js: 28ms, proxy.ts: 7ms, application-code: 112ms)
+ GET /admin 200 in 146ms (next.js: 48ms, proxy.ts: 6ms, application-code: 92ms)
+ GET /admin 200 in 144ms (next.js: 67ms, proxy.ts: 5ms, application-code: 73ms)
+ GET /admin 200 in 157ms (next.js: 7ms, proxy.ts: 5ms, application-code: 145ms)
+ GET /admin 200 in 156ms (next.js: 26ms, proxy.ts: 4ms, application-code: 126ms)
+ GET /admin 200 in 159ms (next.js: 12ms, proxy.ts: 6ms, application-code: 142ms)
+ GET /admin 200 in 161ms (next.js: 28ms, proxy.ts: 8ms, application-code: 125ms)
+ GET /admin 200 in 160ms (next.js: 49ms, proxy.ts: 6ms, application-code: 105ms)
+ GET /admin 200 in 160ms (next.js: 69ms, proxy.ts: 4ms, application-code: 87ms)
+ GET /admin 200 in 278ms (next.js: 6ms, proxy.ts: 5ms, application-code: 266ms)
+ GET /admin 200 in 276ms (next.js: 26ms, proxy.ts: 4ms, application-code: 246ms)
+ GET /admin 200 in 235ms (next.js: 16ms, proxy.ts: 4ms, application-code: 214ms)
+ GET /admin 200 in 279ms (next.js: 39ms, proxy.ts: 7ms, application-code: 232ms)
+ GET /admin 200 in 277ms (next.js: 164ms, proxy.ts: 8ms, application-code: 105ms)
+ GET /admin 200 in 277ms (next.js: 162ms, proxy.ts: 30ms, application-code: 85ms)
+ GET /admin 200 in 159ms (next.js: 7ms, proxy.ts: 6ms, application-code: 146ms)
+ GET /admin 200 in 158ms (next.js: 31ms, proxy.ts: 5ms, application-code: 122ms)
+ GET /admin 200 in 135ms (next.js: 12ms, proxy.ts: 25ms, application-code: 98ms)
+ GET /admin 200 in 158ms (next.js: 32ms, proxy.ts: 6ms, application-code: 120ms)
+ GET /admin 200 in 155ms (next.js: 29ms, proxy.ts: 27ms, application-code: 100ms)
+ GET /admin 200 in 134ms (next.js: 47ms, proxy.ts: 4ms, application-code: 83ms)
+ GET /admin 200 in 159ms (next.js: 9ms, proxy.ts: 5ms, application-code: 145ms)
+ GET /admin 200 in 158ms (next.js: 28ms, proxy.ts: 4ms, application-code: 126ms)
+ GET /admin 200 in 159ms (next.js: 16ms, proxy.ts: 44ms, application-code: 99ms)
+ GET /admin 200 in 158ms (next.js: 30ms, proxy.ts: 5ms, application-code: 122ms)
+ GET /admin 200 in 156ms (next.js: 30ms, proxy.ts: 25ms, application-code: 101ms)
+ GET /admin 200 in 166ms (next.js: 49ms, proxy.ts: 3ms, application-code: 114ms)
+ GET /admin 200 in 166ms (next.js: 10ms, proxy.ts: 5ms, application-code: 151ms)
+ GET /admin 200 in 165ms (next.js: 31ms, proxy.ts: 4ms, application-code: 131ms)
+ GET /admin 200 in 164ms (next.js: 53ms, proxy.ts: 3ms, application-code: 107ms)
+ GET /admin 200 in 121ms (next.js: 16ms, proxy.ts: 26ms, application-code: 79ms)
+ GET /admin 200 in 119ms (next.js: 36ms, proxy.ts: 25ms, application-code: 58ms)
+ GET /admin 200 in 161ms (next.js: 49ms, proxy.ts: 3ms, application-code: 109ms)
+ GET /admin 200 in 161ms (next.js: 11ms, proxy.ts: 5ms, application-code: 145ms)
+ GET /admin 200 in 160ms (next.js: 32ms, proxy.ts: 4ms, application-code: 124ms)
+ GET /admin 200 in 160ms (next.js: 57ms, proxy.ts: 3ms, application-code: 100ms)
+ GET /admin 200 in 114ms (next.js: 50ms, proxy.ts: 4ms, application-code: 61ms)
+ GET /admin 200 in 117ms (next.js: 28ms, proxy.ts: 5ms, application-code: 84ms)
+ GET /admin 200 in 159ms (next.js: 12ms, proxy.ts: 23ms, application-code: 124ms)
+ GET /admin 200 in 154ms (next.js: 10ms, proxy.ts: 6ms, application-code: 139ms)
+ GET /admin 200 in 153ms (next.js: 29ms, proxy.ts: 4ms, application-code: 119ms)
+ GET /admin 200 in 153ms (next.js: 54ms, proxy.ts: 3ms, application-code: 95ms)
+ GET /admin 200 in 111ms (next.js: 27ms, proxy.ts: 5ms, application-code: 78ms)
+ GET /admin 200 in 111ms (next.js: 47ms, proxy.ts: 5ms, application-code: 59ms)
+ GET /admin 200 in 138ms (next.js: 6ms, proxy.ts: 3ms, application-code: 130ms)
+ GET /admin 200 in 111ms (next.js: 13ms, proxy.ts: 6ms, application-code: 93ms)
+ GET /admin 200 in 110ms (next.js: 37ms, proxy.ts: 5ms, application-code: 69ms)
+ GET /admin 200 in 105ms (next.js: 56ms, proxy.ts: 3ms, application-code: 45ms)
+ GET /admin 200 in 101ms (next.js: 52ms, proxy.ts: 27ms, application-code: 22ms)
+✓ Compiled in 59ms
+ GET /admin 200 in 297ms (next.js: 94ms, proxy.ts: 14ms, application-code: 188ms)
+ GET /api/admin/photos 200 in 469ms (next.js: 231ms, application-code: 237ms)
+ GET /api/admin/clients 200 in 669ms (next.js: 203ms, application-code: 466ms)
+ GET /api/admin/disponibilites 200 in 672ms (next.js: 271ms, application-code: 401ms)
+ GET /api/admin/reservations 200 in 674ms (next.js: 168ms, application-code: 506ms)
+✓ Compiled in 133ms
+ GET /admin 200 in 134ms (next.js: 92ms, proxy.ts: 13ms, application-code: 29ms)
+ GET /admin 200 in 28ms (next.js: 4ms, proxy.ts: 3ms, application-code: 21ms)
+ GET /admin 200 in 27ms (next.js: 4ms, proxy.ts: 3ms, application-code: 20ms)
+ GET /admin 200 in 87ms (next.js: 44ms, proxy.ts: 14ms, application-code: 30ms)
+✓ Compiled in 64ms
+ GET /admin 200 in 135ms (next.js: 93ms, proxy.ts: 13ms, application-code: 28ms)

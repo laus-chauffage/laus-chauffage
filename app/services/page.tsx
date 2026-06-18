@@ -114,7 +114,12 @@ export default function ServicesPage() {
       <section className="py-16 bg-gray-50">
         <div className="max-w-6xl mx-auto px-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {services.map((s) => (
-            <div key={s.title} className="bg-white rounded-2xl shadow-sm p-6 border border-gray-100 flex flex-col">
+            <div key={s.title} className="relative bg-white rounded-2xl shadow-sm p-6 border border-gray-100 flex flex-col">
+              {s.title === "Entretien chaudière" && (
+                <div className="absolute -top-3 -right-3 bg-[#c0392b] text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-md flex items-center gap-1">
+                  <span>★</span> Tarif fidélité
+                </div>
+              )}
               <div className="mb-4">{s.icon}</div>
               <h2 className="text-xl font-bold text-[#1e3a5f] mb-1">{s.title}</h2>
               <div className="flex gap-3 mb-4">

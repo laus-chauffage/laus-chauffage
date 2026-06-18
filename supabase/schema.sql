@@ -19,15 +19,17 @@ create table if not exists reservations (
 create table if not exists clients (
   id uuid default gen_random_uuid() primary key,
   created_at timestamptz default now(),
+  civilite text default 'M' check (civilite in ('M', 'Mme')),
   prenom text not null,
   nom text not null,
   email text,
   telephone text not null,
   adresse text not null,
   commune text not null,
-  type_chaudiere text not null check (type_chaudiere in ('mazout', 'gaz')),
-  dernier_entretien date not null,
-  prochain_entretien date not null,
+  code_postal text,
+  type_chaudiere text not null default 'mazout' check (type_chaudiere in ('mazout', 'gaz')),
+  dernier_entretien date,
+  prochain_entretien date,
   mode_contact text not null default 'email' check (mode_contact in ('email', 'courrier'))
 );
 

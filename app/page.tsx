@@ -49,14 +49,17 @@ export default function Home() {
           {[
             { val: "45+", label: "Années d'expérience" },
             { val: "500+", label: "Clients fidèles" },
-            { val: "8", label: "Communes desservies" },
-            { val: "2h", label: "Créneaux dédiés" },
+            { val: "BW & Hainaut", label: "Zone d'intervention" },
           ].map((s) => (
             <div key={s.label}>
               <div className="text-3xl font-bold">{s.val}</div>
               <div className="text-sm opacity-90 mt-1">{s.label}</div>
             </div>
           ))}
+          <div>
+            <div className="flex justify-center"><Zap size={36} className="fill-white stroke-white" /></div>
+            <div className="text-sm opacity-90 mt-1">Intervention rapide</div>
+          </div>
         </div>
       </section>
 
@@ -117,15 +120,12 @@ export default function Home() {
       {/* Zone d'intervention */}
       <section className="py-16 bg-gray-50">
         <div className="max-w-6xl mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold text-[#1e3a5f] mb-4">Zone d'intervention</h2>
-          <p className="text-gray-500 mb-8">Nous intervenons dans les communes suivantes :</p>
-          <div className="flex flex-wrap justify-center gap-3">
-            {zones.map((z) => (
-              <span key={z} className="bg-[#1e3a5f] text-white px-4 py-2 rounded-full text-sm font-medium">
-                {z}
-              </span>
-            ))}
-          </div>
+          <h2 className="text-3xl font-bold text-[#1e3a5f] mb-4">Un chauffagiste local, proche de chez vous</h2>
+          <p className="text-gray-500 mb-2 max-w-xl mx-auto">Basé à Rebecq, j'interviens rapidement en Brabant wallon et dans le Hainaut.</p>
+          <p className="text-gray-400 text-sm mb-8">Rebecq · Tubize · Braine-le-Comte · Soignies · Enghien · Braine-le-Château · Braine-l'Alleud · Ittre · et environs</p>
+          <a href="/reservation" className="inline-block bg-[#c0392b] hover:bg-[#a93226] text-white px-6 py-3 rounded-xl font-semibold transition-colors text-sm">
+            Prendre rendez-vous
+          </a>
         </div>
       </section>
 
