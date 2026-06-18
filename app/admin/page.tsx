@@ -67,12 +67,87 @@ function ReservationCard({ r, cancelling, onCancel }: { r: Reservation; cancelli
   );
 }
 
+const JOURS = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"];
+const MOIS_FR = ["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"];
+
+function CalendrierAdmin({ reservations, onDayClick, selectedDay }: {
+  reservations: Reservation[];
+  onDayClick: (date: string) => void;
+  selectedDay: string | null;
+}) {
+  const [moisOffset, setMoisOffset] = useState(0);
+  const now = new Date();
+  const annee = new Date(now.getFullYear(), now.getMonth() + moisOffset, 1).getFullYear();
+  const mois = new Date(now.getFullYear(), now.getMonth() + moisOffset, 1).getMonth();
+
+  const premierJour = new Date(annee, mois, 1);
+  const dernierJour = new Date(annee, mois + 1, 0);
+  // lundi=0 ... dimanche=6
+  const startDow = (premierJour.getDay() + 6) % 7;
+  const nbJours = dernierJour.getDate();
+
+  // Groupe les réservations confirmées par date
+  const rdvParJour: Record<string, Reservation[]> = {};
+  for (const r of reservations) {
+    if (r.statut === "confirme" || r.statut === "en_attente") {
+      if (!rdvParJour[r.date]) rdvParJour[r.date] = [];
+      rdvParJour[r.date].push(r);
+    }
+  }
+
+  const cells: (number | null)[] = [...Array(startDow).fill(null), ...Array.from({length: nbJours}, (_, i) => i + 1)];
+  while (cells.length % 7 !== 0) cells.push(null);
+
+  const todayStr = new Date().toISOString().split("T")[0];
+
+  return (
+    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 mb-6">
+      <div className="flex items-center justify-between mb-3">
+        <button onClick={() => setMoisOffset(o => o - 1)} className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors text-gray-500">‹</button>
+        <h3 className="font-bold text-[#1e3a5f] text-sm">{MOIS_FR[mois]} {annee}</h3>
+        <button onClick={() => setMoisOffset(o => o + 1)} className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors text-gray-500">›</button>
+      </div>
+      <div className="grid grid-cols-7 gap-1 text-center mb-1">
+        {JOURS.map(j => <div key={j} className="text-xs text-gray-400 font-medium py-1">{j}</div>)}
+      </div>
+      <div className="grid grid-cols-7 gap-1">
+        {cells.map((jour, i) => {
+          if (!jour) return <div key={i} />;
+          const dateStr = `${annee}-${String(mois + 1).padStart(2, "0")}-${String(jour).padStart(2, "0")}`;
+          const rdvs = rdvParJour[dateStr] || [];
+          const isToday = dateStr === todayStr;
+          const isSelected = dateStr === selectedDay;
+          const hasRdv = rdvs.length > 0;
+          return (
+            <button key={i} onClick={() => onDayClick(dateStr)}
+              className={`relative flex flex-col items-center justify-center h-9 rounded-lg text-xs font-medium transition-all
+                ${isSelected ? "bg-[#1e3a5f] text-white" : isToday ? "bg-[#1e3a5f]/10 text-[#1e3a5f] font-bold" : hasRdv ? "hover:bg-gray-100 text-gray-700" : "hover:bg-gray-50 text-gray-400"}`}>
+              {jour}
+              {hasRdv && !isSelected && (
+                <span className={`absolute bottom-1 w-1.5 h-1.5 rounded-full ${rdvs.some(r => r.statut === "en_attente") ? "bg-yellow-400" : "bg-[#c0392b]"}`} />
+              )}
+              {hasRdv && isSelected && (
+                <span className="absolute bottom-1 w-1.5 h-1.5 rounded-full bg-white/70" />
+              )}
+            </button>
+          );
+        })}
+      </div>
+      <div className="flex gap-4 mt-3 text-xs text-gray-400">
+        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-[#c0392b] inline-block"/>Confirmé</span>
+        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-yellow-400 inline-block"/>En attente</span>
+      </div>
+    </div>
+  );
+}
+
 function ReservationsPanel({ reservations, cancelling, onCancel }: {
   reservations: Reservation[];
   cancelling: string | null;
   onCancel: (id: string) => void;
 }) {
   const [vue, setVue] = useState<"avenir" | "attente" | "passes" | "annules">("avenir");
+  const [selectedDay, setSelectedDay] = useState<string | null>(null);
   const today = new Date().toISOString().split("T")[0];
 
   const avenir = reservations.filter(r => r.date >= today && r.statut === "confirme");
@@ -90,8 +165,39 @@ function ReservationsPanel({ reservations, cancelling, onCancel }: {
 
   const liste = vue === "avenir" ? avenir : vue === "attente" ? attente : vue === "passes" ? passes : annules;
 
+  const rdvJourSelectionne = selectedDay ? reservations.filter(r => r.date === selectedDay && (r.statut === "confirme" || r.statut === "en_attente")) : [];
+
   return (
     <div>
+      {/* Calendrier */}
+      <CalendrierAdmin reservations={reservations} onDayClick={(d) => setSelectedDay(prev => prev === d ? null : d)} selectedDay={selectedDay} />
+
+      {/* Détail jour sélectionné */}
+      {selectedDay && (
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 mb-6">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="font-bold text-[#1e3a5f] text-sm">RDV du {fmtDate(selectedDay)}</h3>
+            <button onClick={() => setSelectedDay(null)} className="text-gray-400 hover:text-gray-600 text-lg">✕</button>
+          </div>
+          {rdvJourSelectionne.length === 0 ? (
+            <p className="text-gray-400 text-sm">Aucun rendez-vous confirmé ce jour.</p>
+          ) : (
+            <div className="space-y-2">
+              {rdvJourSelectionne.sort((a,b) => a.creneau.localeCompare(b.creneau)).map(r => (
+                <div key={r.id} className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl text-sm">
+                  <span className="font-bold text-[#1e3a5f] w-12 shrink-0">{r.creneau}</span>
+                  <span className="font-medium text-gray-800">{r.prenom} {r.nom}</span>
+                  <span className="text-gray-400 hidden sm:inline">{r.service}</span>
+                  <span className={`ml-auto text-xs px-2 py-0.5 rounded-full font-medium ${r.statut === "confirme" ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"}`}>
+                    {r.statut === "confirme" ? "Confirmé" : "En attente"}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Stats */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
         {vues.map((v) => (
