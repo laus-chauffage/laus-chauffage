@@ -2,16 +2,28 @@
 import { getSupabase, calcProchainEntretien, calcStatut } from "@/lib/supabase";
 
 export async function GET() {
-  const { data, error } = await getSupabase()
-    .from("clients")
-    .select("*")
-    .order("prochain_entretien", { ascending: true });
+  const sb = getSupabase();
+  const [clientsRes, rappelsRes] = await Promise.all([
+    sb.from("clients").select("*").order("prochain_entretien", { ascending: true }),
+    sb.from("rappels").select("client_id, type, date_envoi").order("date_envoi", { ascending: false }),
+  ]);
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (clientsRes.error) return NextResponse.json({ error: clientsRes.error.message }, { status: 500 });
 
-  const clients = (data || []).map((c: any) => ({
+  // Groupe les rappels par client_id → dernier rappel par type
+  const rappelsMap: Record<string, { email?: string; courrier?: string; sms?: string }> = {};
+  for (const r of (rappelsRes.data || [])) {
+    if (!rappelsMap[r.client_id]) rappelsMap[r.client_id] = {};
+    const m = rappelsMap[r.client_id];
+    if (r.type === "email" && !m.email) m.email = r.date_envoi;
+    if (r.type === "courrier" && !m.courrier) m.courrier = r.date_envoi;
+    if (r.type === "sms" && !m.sms) m.sms = r.date_envoi;
+  }
+
+  const clients = (clientsRes.data || []).map((c: any) => ({
     ...c,
     statut: calcStatut(c.prochain_entretien),
+    rappels_envoyes: rappelsMap[c.id] || {},
   }));
 
   return NextResponse.json({ clients });

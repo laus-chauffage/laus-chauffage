@@ -351,6 +351,13 @@ export default function AdminPage() {
     });
   }
 
+  function markRappelSent(clientId: string, type: "email" | "courrier" | "sms") {
+    setClients(prev => prev.map(c => c.id === clientId
+      ? { ...c, rappels_envoyes: { ...((c as any).rappels_envoyes || {}), [type]: new Date().toISOString() } }
+      : c
+    ));
+  }
+
   async function sendRappel(clientId: string) {
     setSending(clientId);
     await fetch("/api/rappels", {
@@ -359,6 +366,7 @@ export default function AdminPage() {
       body: JSON.stringify({ clientId }),
     });
     setSending(null);
+    markRappelSent(clientId, "email");
     showToast("Rappel envoyé ✓");
   }
 
@@ -369,6 +377,7 @@ export default function AdminPage() {
       body: JSON.stringify({ clientId: client.id }),
     });
     window.open(`/api/rappels/print?clientId=${client.id}`, "_blank");
+    markRappelSent(client.id, "courrier");
   }
 
   const clientsFiltres = clients.filter(c => filtreStatut === "tous" || c.statut === filtreStatut);
@@ -843,6 +852,9 @@ export default function AdminPage() {
                               </button>
                             </div>
                             <div className="flex items-center gap-1.5 shrink-0">
+                              {c.rappels_envoyes?.email && <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-medium hidden sm:inline">✓ Email</span>}
+                              {c.rappels_envoyes?.courrier && <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-medium hidden sm:inline">✓ Courrier</span>}
+                              {c.rappels_envoyes?.sms && <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-medium hidden sm:inline">✓ SMS</span>}
                               <input type="date"
                                 defaultValue={new Date().toISOString().split("T")[0]}
                                 onChange={(e) => setDateEntretien(prev => ({ ...prev, [c.id]: e.target.value }))}
@@ -866,6 +878,7 @@ export default function AdminPage() {
                                 setSending(c.id + "_sms");
                                 await fetch("/api/rappels", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ clientId: c.id, mode: "sms" }) });
                                 setSending(null);
+                                markRappelSent(c.id, "sms");
                                 showToast("SMS envoyé ✓");
                               }} disabled={sending === c.id + "_sms"} title="Envoyer rappel SMS"
                                 className="p-1.5 bg-green-600 hover:bg-green-700 text-white rounded-lg disabled:opacity-60">
