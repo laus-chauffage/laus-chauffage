@@ -1,41 +1,63 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSupabase } from "@/lib/supabase";
-import { format, subMonths, parse, addYears } from "date-fns";
+import { getSupabase, calcProchainEntretien } from "@/lib/supabase";
+import { format, subDays, parse } from "date-fns";
 
 const PROHEAT_BASE = "https://api.testocloud.be/expose";
 
-async function fetchInChunks(endpoint: string, secretKey: string, months = 36) {
-  const to = new Date();
-  const from = subMonths(to, months);
-  const results: any[] = [];
-  let cursor = new Date(from);
-
-  while (cursor < to) {
-    const chunkEnd = new Date(cursor);
-    chunkEnd.setDate(chunkEnd.getDate() + 14);
-    if (chunkEnd > to) chunkEnd.setTime(to.getTime());
-
-    const fromStr = format(cursor, "dd-MM-yyyy");
-    const toStr = format(chunkEnd, "dd-MM-yyyy");
-
-    const res = await fetch(
-      `${PROHEAT_BASE}/${endpoint}?from_date=${fromStr}&to_date=${toStr}&language=fr`,
-      { headers: { "X-expose-secret-key": secretKey, "Content-Type": "application/json" } }
-    );
-
-    if (!res.ok) throw new Error(`ProHeat API error ${res.status} on ${endpoint}`);
-    const data = await res.json();
-
-    if (data.success && Array.isArray(data.data)) {
-      for (const item of data.data) {
-        if (!results.find((x) => x.id === item.id)) results.push(item);
-      }
-    }
-
-    cursor.setDate(cursor.getDate() + 15);
+async function fetchJson(url: string, secretKey: string) {
+  const res = await fetch(url, {
+    headers: { "X-expose-secret-key": secretKey, "Content-Type": "application/json" },
+  });
+  if (!res.ok) {
+    const errText = await res.text().catch(() => "");
+    throw new Error(`ProHeat API error ${res.status}: ${errText.slice(0, 200)}`);
   }
+  const buf = await res.arrayBuffer();
+  const text = new TextDecoder("windows-1252").decode(buf);
+  return JSON.parse(text);
+}
 
-  return results;
+async function fetchCertsRange(secretKey: string, from: Date, to: Date) {
+  const fromStr = format(from, "dd-MM-yyyy");
+  const toStr = format(to, "dd-MM-yyyy");
+  const data = await fetchJson(`${PROHEAT_BASE}/pull-certificates?from_date=${fromStr}&to_date=${toStr}&language=fr`, secretKey);
+  return data.success && Array.isArray(data.data) ? data.data : [];
+}
+
+async function fetchCerts(secretKey: string, days = 14) {
+  const to = new Date();
+  const from = subDays(to, days);
+  if (days <= 14) return fetchCertsRange(secretKey, from, to);
+
+  // Chunks de 14 jours max (limite API ProHeat = 15 jours)
+  const allCerts: any[] = [];
+  const fromTs = from.getTime();
+  let chunkEndTs = to.getTime();
+  while (chunkEndTs > fromTs) {
+    const chunkStartTs = Math.max(chunkEndTs - 14 * 24 * 60 * 60 * 1000, fromTs);
+    const chunk = await fetchCertsRange(secretKey, new Date(chunkStartTs), new Date(chunkEndTs));
+    allCerts.push(...chunk);
+    chunkEndTs = chunkStartTs - 24 * 60 * 60 * 1000;
+    await new Promise(r => setTimeout(r, 500));
+  }
+  return allCerts;
+}
+
+async function fetchClientById(secretKey: string, clientId: number, certDate: string) {
+  // certDate is in "dd-MM-yyyy" format (ProHeat format)
+  const data = await fetchJson(`${PROHEAT_BASE}/pull-client?from_date=${certDate}&to_date=${certDate}&language=fr`, secretKey);
+  if (!data.success || !Array.isArray(data.data)) return null;
+  return data.data.find((c: any) => c.id === clientId) || null;
+}
+
+function parseProheatDate(dateStr: string | null): string | null {
+  if (!dateStr) return null;
+  try {
+    const d = parse(dateStr, "dd-MM-yyyy", new Date());
+    return format(d, "yyyy-MM-dd");
+  } catch {
+    return null;
+  }
 }
 
 function parseName(fullName: string) {
@@ -44,119 +66,114 @@ function parseName(fullName: string) {
   return { prenom: parts[0], nom: parts.slice(1).join(" ") };
 }
 
-function parseProheatDate(dateStr: string | null): string | null {
-  if (!dateStr) return null;
-  try {
-    // ProHeat returns dates as "22-04-2020"
-    const d = parse(dateStr, "dd-MM-yyyy", new Date());
-    return format(d, "yyyy-MM-dd");
-  } catch {
-    return null;
-  }
+function parseTypeChaudiere(fuel: string | null | undefined): "mazout" | "gaz" {
+  if (String(fuel) === "2") return "gaz";
+  return "mazout";
 }
 
-export async function POST(req: NextRequest) {
+// Appelé par le cron Vercel chaque lundi matin
+export async function GET(req: NextRequest) {
+  const authHeader = req.headers.get("authorization");
+  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+    return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
+  }
+  return runSync(14);
+}
+
+async function runSync(days: number) {
   try {
-    const { secretKey } = await req.json();
-    if (!secretKey) return NextResponse.json({ error: "Clé API manquante" }, { status: 400 });
+    const secretKey = process.env.PROHEAT_API_KEY;
+    if (!secretKey) return NextResponse.json({ error: "Clé API non configurée" }, { status: 500 });
 
-    // Fetch clients (last 36 months) and certificates (last 36 months) in parallel
-    const [clients, certs] = await Promise.all([
-      fetchInChunks("pull-client", secretKey, 36),
-      fetchInChunks("pull-certificates", secretKey, 36),
-    ]);
-
-    // Build a map: proheat client_id → most recent certification_date + next_certification_date
-    const certMap = new Map<number, { dernier: string; prochain: string | null }>();
-    for (const cert of certs) {
-      const clientId = cert.client_id;
-      const certDate = parseProheatDate(cert.certification_date);
-      const nextDate = parseProheatDate(cert.next_certification_date);
-      if (!certDate) continue;
-
-      const existing = certMap.get(clientId);
-      if (!existing || certDate > existing.dernier) {
-        certMap.set(clientId, { dernier: certDate, prochain: nextDate });
-      }
-    }
+    const certs = await fetchCerts(secretKey, days);
 
     const sb = getSupabase();
-    let created = 0;
     let updated = 0;
+    let created = 0;
     let skipped = 0;
 
-    for (const c of clients) {
-      if (!c.name || !c.phone) { skipped++; continue; }
+    for (const cert of certs) {
+      const certDate = parseProheatDate(cert.certification_date);
+      if (!certDate) { skipped++; continue; }
 
-      const { prenom, nom } = parseName(c.name);
-      const phone = (c.phone || "").replace(/\s/g, "");
-      const dates = certMap.get(c.id);
-
-      const contactFields = {
-        email: c.email || undefined,
-        telephone: phone,
-        rue: c.street || c.address || "",
-        numero: c.house_number || c.number || null,
-        commune: c.city || "",
-        code_postal: c.postal_code || "",
-        ...(dates ? {
-          dernier_entretien: dates.dernier,
-          prochain_entretien: dates.prochain,
-        } : {}),
-      };
-
-      // Check if already exists by proheat_id
+      // Cherche le client par proheat_id
       const { data: existing } = await sb
         .from("clients")
-        .select("id")
-        .eq("proheat_id", String(c.id))
+        .select("id, type_chaudiere")
+        .eq("proheat_id", String(cert.client_id))
         .maybeSingle();
 
       if (existing) {
-        await sb.from("clients").update(contactFields).eq("id", existing.id);
+        // Client connu → mise à jour des dates
+        const prochain = calcProchainEntretien(certDate, existing.type_chaudiere);
+        await sb.from("clients").update({
+          dernier_entretien: certDate,
+          prochain_entretien: prochain,
+        }).eq("id", existing.id);
         updated++;
       } else {
-        // Check by phone to avoid duplicates
-        const { data: byPhone } = await sb
-          .from("clients")
-          .select("id")
-          .eq("telephone", phone)
-          .maybeSingle();
+        // Nouveau client → récupère ses infos depuis ProHeat (on passe la date du cert pour le retrouver)
+        await new Promise(r => setTimeout(r, days > 30 ? 1000 : 300));
+        const c = await fetchClientById(secretKey, cert.client_id, cert.certification_date);
+        if (!c || !c.name) { skipped++; continue; }
+
+        const { prenom, nom } = parseName(c.name);
+        const phone = (c.phone || "").replace(/\s/g, "");
+        const fuel = c.heating_appliance?.[0]?.wallonie?.fuel;
+        const type_chaudiere = parseTypeChaudiere(fuel);
+        const prochain = calcProchainEntretien(certDate, type_chaudiere);
+
+        // Vérifie si déjà en base par téléphone
+        const { data: byPhone } = phone ? await sb
+          .from("clients").select("id").eq("telephone", phone).maybeSingle()
+          : { data: null };
 
         if (byPhone) {
-          await sb.from("clients").update({ proheat_id: String(c.id), ...contactFields }).eq("id", byPhone.id);
+          await sb.from("clients").update({
+            proheat_id: String(c.id),
+            dernier_entretien: certDate,
+            prochain_entretien: prochain,
+            type_chaudiere,
+          }).eq("id", byPhone.id);
           updated++;
         } else {
-          await sb.from("clients").insert({
+          const { error: insertError } = await sb.from("clients").insert({
             proheat_id: String(c.id),
             prenom: prenom || "—",
             nom,
             email: c.email || null,
-            telephone: phone,
-            rue: c.street || c.address || "—",
-            numero: c.house_number || c.number || null,
+            telephone: phone || "—",
+            rue: c.address || "—",
+            numero: c.house_no || null,
             commune: c.city || "—",
             code_postal: c.postal_code || null,
-            type_chaudiere: "gaz",
-            ...(dates ? {
-              dernier_entretien: dates.dernier,
-              prochain_entretien: dates.prochain,
-            } : {}),
+            type_chaudiere,
+            dernier_entretien: certDate,
+            prochain_entretien: prochain,
           });
-          created++;
+          if (insertError) {
+            console.error("Insert error:", insertError.message);
+            skipped++;
+          } else {
+            created++;
+          }
         }
       }
     }
 
     return NextResponse.json({
       success: true,
-      total: clients.length,
-      created,
+      certs_found: certs.length,
       updated,
+      created,
       skipped,
-      certsSynced: certMap.size,
     });
   } catch (e: any) {
     return NextResponse.json({ error: e.message || "Erreur sync" }, { status: 500 });
   }
+}
+
+export async function POST(req: NextRequest) {
+  const body = await req.json().catch(() => ({}));
+  return runSync(body.days ?? 14);
 }

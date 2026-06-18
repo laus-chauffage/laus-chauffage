@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { Calendar, Bell, Plus, Send, Printer, ImagePlus, Trash2, XCircle, CheckCircle, ClipboardCheck, Clock, Upload, Pencil, MailCheck } from "lucide-react";
+import { Calendar, Bell, Plus, Send, Printer, ImagePlus, Trash2, XCircle, CheckCircle, Clock, Upload, Pencil, MailCheck } from "lucide-react";
 import ConfirmModal from "@/components/ConfirmModal";
 
 type Client = {
@@ -266,8 +266,6 @@ export default function AdminPage() {
   const [filtreStatut, setFiltreStatut] = useState("tous");
   const [sending, setSending] = useState<string | null>(null);
   const [cancelling, setCancelling] = useState<string | null>(null);
-  const [marquerFait, setMarquerFait] = useState<string | null>(null);
-  const [dateEntretien, setDateEntretien] = useState<Record<string, string>>({});
   const [editingClient, setEditingClient] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<Partial<Client>>({});
   const [savingClient, setSavingClient] = useState(false);
@@ -304,7 +302,7 @@ export default function AdminPage() {
   const [showProheatSync, setShowProheatSync] = useState(false);
   const [proheatKey, setProheatKey] = useState("");
   const [syncing, setSyncing] = useState(false);
-  const [syncResult, setSyncResult] = useState<{ created: number; updated: number; skipped: number; total: number; error?: string } | null>(null);
+  const [syncResult, setSyncResult] = useState<{ created: number; updated: number; skipped: number; certs_found: number; error?: string } | null>(null);
   const [selectionMode, setSelectionMode] = useState(false);
   const [selectedClients, setSelectedClients] = useState<Set<string>>(new Set());
   const [deletingBatch, setDeletingBatch] = useState(false);
@@ -442,32 +440,6 @@ export default function AdminPage() {
     fetchData();
   }
 
-  async function enregistrerEntretien(clientId: string) {
-    const date = dateEntretien[clientId] || new Date().toISOString().split("T")[0];
-    openModal({
-      title: "Entretien effectué",
-      message: `Confirmer que l'entretien a été réalisé le ${date} ? Le prochain rappel sera recalculé automatiquement.`,
-      confirmLabel: "Oui, enregistrer",
-      confirmColor: "green",
-      onConfirm: async () => {
-        closeModal();
-        setMarquerFait(clientId);
-        await fetch("/api/admin/clients/entretien", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ clientId, date_entretien: date }),
-        });
-        await fetch("/api/satisfaction", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ clientId }),
-        });
-        setMarquerFait(null);
-        showToast("Entretien enregistré — email de satisfaction envoyé ✓");
-        fetchData();
-      },
-    });
-  }
 
   function markRappelSent(clientId: string, type: "email" | "courrier" | "sms") {
     setClients(prev => prev.map(c => c.id === clientId
@@ -690,41 +662,50 @@ export default function AdminPage() {
                 {showProheatSync && (
                   <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-4">
                     <p className="text-sm font-semibold text-[#1e3a5f] mb-2">Synchronisation ProHeat / Testo</p>
-                    <p className="text-xs text-gray-500 mb-3">Entrez votre clé API ProHeat (disponible dans Pro+ → Paramètres → API).</p>
-                    <div className="flex gap-2">
-                      <input
-                        type="password"
-                        placeholder="X-expose-secret-key"
-                        value={proheatKey}
-                        onChange={(e) => setProheatKey(e.target.value)}
-                        className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]"
-                      />
-                      <button
-                        disabled={!proheatKey || syncing}
-                        onClick={async () => {
+                    <p className="text-xs text-gray-500 mb-3">Importe les clients et dates d'entretien depuis ProHeat.</p>
+                    <button
+                      disabled={syncing}
+                      onClick={async () => {
+                        setSyncing(true);
+                        setSyncResult(null);
+                        const res = await fetch("/api/admin/proheat-sync", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ days: 14 }) });
+                        const data = await res.json();
+                        setSyncResult(res.ok ? data : { created: 0, updated: 0, skipped: 0, certs_found: 0, error: data.error });
+                        setSyncing(false);
+                        if (res.ok) setTimeout(() => fetchData(), 300);
+                      }}
+                      className="bg-[#1e3a5f] text-white px-4 py-2 rounded-lg text-sm font-semibold disabled:opacity-40 hover:bg-[#2a4f80] transition-colors"
+                    >
+                      {syncing ? "Synchronisation…" : "Lancer la synchro"}
+                    </button>
+                    <button
+                      disabled={syncing}
+                      onClick={() => openModal({
+                        title: "Import initial ProHeat",
+                        message: "Importer tous les clients des 18 derniers mois depuis ProHeat ? L'opération peut prendre plusieurs minutes.",
+                        confirmLabel: "Lancer l'import",
+                        confirmColor: "orange",
+                        onConfirm: async () => {
+                          closeModal();
                           setSyncing(true);
                           setSyncResult(null);
-                          const res = await fetch("/api/admin/proheat-sync", {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({ secretKey: proheatKey }),
-                          });
+                          const res = await fetch("/api/admin/proheat-sync", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ days: 548 }) });
                           const data = await res.json();
-                          setSyncResult(res.ok ? data : { created: 0, updated: 0, skipped: 0, total: 0, error: data.error });
+                          setSyncResult(res.ok ? data : { created: 0, updated: 0, skipped: 0, certs_found: 0, error: data.error });
                           setSyncing(false);
-                          if (res.ok) { fetchData(); setShowProheatSync(false); }
-                        }}
-                        className="bg-[#1e3a5f] text-white px-4 py-2 rounded-lg text-sm font-semibold disabled:opacity-40 hover:bg-[#2a4f80] transition-colors"
-                      >
-                        {syncing ? "Sync…" : "Lancer"}
-                      </button>
-                    </div>
+                          if (res.ok) setTimeout(() => fetchData(), 300);
+                        },
+                      })}
+                      className="border border-[#1e3a5f] text-[#1e3a5f] px-4 py-2 rounded-lg text-sm font-semibold disabled:opacity-40 hover:bg-[#1e3a5f] hover:text-white transition-colors"
+                    >
+                      Import initial (18 mois)
+                    </button>
                   </div>
                 )}
 
                 {syncResult && (
                   <div className={`flex items-center justify-between gap-3 rounded-xl px-4 py-3 text-sm mb-2 ${syncResult.error ? "bg-red-50 border border-red-200 text-red-700" : "bg-green-50 border border-green-200 text-green-700"}`}>
-                    <span>{syncResult.error ? `Erreur : ${syncResult.error}` : `Sync OK — ${syncResult.created} créé(s), ${syncResult.updated} mis à jour, ${syncResult.skipped} ignoré(s) sur ${syncResult.total} clients ProHeat.`}</span>
+                    <span>{syncResult.error ? `Erreur : ${syncResult.error}` : `Sync OK — ${syncResult.created} créé(s), ${syncResult.updated} mis à jour, ${syncResult.skipped} ignoré(s) sur ${syncResult.certs_found} certificats.`}</span>
                     <button onClick={() => setSyncResult(null)} className="text-gray-400 hover:text-gray-600"><XCircle size={16} /></button>
                   </div>
                 )}
@@ -838,144 +819,149 @@ export default function AdminPage() {
                   </div>
                 )}
 
+                {/* Modale édition client */}
                 {editingClient && (
-                  <div className="fixed inset-0 z-10" onClick={() => setEditingClient(null)} />
+                  <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                    <div className="absolute inset-0 bg-black/40" onClick={() => setEditingClient(null)} />
+                    <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto p-6">
+                      <div className="flex items-center justify-between mb-5">
+                        <h3 className="text-lg font-bold text-[#1e3a5f]">Modifier le client</h3>
+                        <button onClick={() => setEditingClient(null)} className="text-gray-400 hover:text-gray-600"><XCircle size={20} /></button>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+                        <div className="sm:col-span-2">
+                          <label className="block text-xs font-medium text-gray-500 mb-1">Civilité</label>
+                          <div className="flex gap-4">
+                            {["M", "Mme"].map((v) => (
+                              <label key={v} className="flex items-center gap-2 cursor-pointer">
+                                <input type="radio" name="civilite_edit" value={v}
+                                  checked={(editForm as any).civilite === v}
+                                  onChange={() => setEditForm(prev => ({ ...prev, civilite: v }))}
+                                  className="accent-[#1e3a5f]" />
+                                <span className="text-sm">{v === "M" ? "Monsieur" : "Madame"}</span>
+                              </label>
+                            ))}
+                          </div>
+                        </div>
+                        {([
+                          { name: "prenom", label: "Prénom" },
+                          { name: "nom", label: "Nom" },
+                          { name: "telephone", label: "Téléphone" },
+                          { name: "email", label: "Email" },
+                          { name: "rue", label: "Rue" },
+                          { name: "numero", label: "Numéro" },
+                          { name: "code_postal", label: "Code postal" },
+                          { name: "commune", label: "Commune" },
+                        ] as const).map((f) => (
+                          <div key={f.name}>
+                            <label className="block text-xs font-medium text-gray-500 mb-1">{f.label}</label>
+                            <input type="text"
+                              value={(editForm as any)[f.name] ?? ""}
+                              onChange={(e) => setEditForm(prev => ({ ...prev, [f.name]: e.target.value }))}
+                              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]" />
+                          </div>
+                        ))}
+                        <div>
+                          <label className="block text-xs font-medium text-gray-500 mb-1">Type chaudière</label>
+                          <select value={editForm.type_chaudiere ?? "mazout"}
+                            onChange={(e) => setEditForm(prev => ({ ...prev, type_chaudiere: e.target.value as "mazout" | "gaz" }))}
+                            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]">
+                            <option value="mazout">Mazout</option>
+                            <option value="gaz">Gaz</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-gray-500 mb-1">Dernier entretien</label>
+                          <input type="date"
+                            value={editForm.dernier_entretien ?? ""}
+                            onChange={(e) => setEditForm(prev => ({ ...prev, dernier_entretien: e.target.value }))}
+                            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]" />
+                        </div>
+                        <div className="sm:col-span-2">
+                          <label className="block text-xs font-medium text-gray-500 mb-1">Mode de contact</label>
+                          <select value={editForm.mode_contact ?? "email"}
+                            onChange={(e) => setEditForm(prev => ({ ...prev, mode_contact: e.target.value as "email" | "courrier" | "sms" }))}
+                            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]">
+                            <option value="email">Email</option>
+                            <option value="courrier">Courrier postal</option>
+                            <option value="sms">SMS</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div className="flex gap-2 pt-2 border-t border-gray-100">
+                        <button onClick={() => openModal({
+                          title: "Supprimer le client",
+                          message: `Supprimer définitivement ${(editForm as any).prenom} ${(editForm as any).nom} ?`,
+                          confirmLabel: "Supprimer",
+                          confirmColor: "red",
+                          onConfirm: async () => {
+                            closeModal();
+                            await fetch("/api/admin/clients", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: editingClient }) });
+                            setEditingClient(null);
+                            fetchData();
+                          },
+                        })} className="border border-red-200 text-red-400 hover:bg-red-50 py-2 px-3 rounded-lg text-sm transition-colors">
+                          <Trash2 size={15} />
+                        </button>
+                        <button onClick={() => setEditingClient(null)} className="flex-1 border border-gray-200 text-gray-500 hover:bg-gray-50 py-2 rounded-lg text-sm transition-colors">Annuler</button>
+                        <button disabled={savingClient} onClick={async () => {
+                          setSavingClient(true);
+                          await fetch("/api/admin/clients", {
+                            method: "PUT",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ id: editingClient, ...editForm }),
+                          });
+                          setSavingClient(false);
+                          setEditingClient(null);
+                          fetchData();
+                        }} className="flex-1 bg-[#1e3a5f] hover:bg-[#2a4f80] text-white py-2 rounded-lg text-sm font-semibold disabled:opacity-60 transition-colors">
+                          {savingClient ? "Enregistrement…" : "Enregistrer"}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
                 )}
 
-                <div className="space-y-3">
+                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                  {/* Header colonnes */}
+                  <div className="hidden lg:grid grid-cols-[1fr_1fr_1fr_1fr_auto] gap-4 px-4 py-2 bg-gray-50 border-b border-gray-100 text-xs font-semibold text-gray-400 uppercase tracking-wide">
+                    <span>Nom</span>
+                    <span>Commune</span>
+                    <span>Chaudière</span>
+                    <span>Prochain entretien</span>
+                    <span>Actions</span>
+                  </div>
                   {clientsFiltres.length === 0 ? (
-                    <div className="bg-white rounded-2xl p-10 text-center text-gray-400 border border-gray-100">Aucun client.</div>
+                    <div className="p-10 text-center text-gray-400">Aucun client.</div>
                   ) : (
                     clientsFiltres.map((c) => (
-                      <div key={c.id} className={`bg-white rounded-xl shadow-sm border p-4 transition-colors relative z-20 ${selectedClients.has(c.id) ? "border-red-300 bg-red-50/30" : "border-gray-100"}`}>
-                        {editingClient === c.id ? (
-                          /* Mode édition */
-                          <div>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
-                              <div className="sm:col-span-2">
-                                <label className="block text-xs font-medium text-gray-500 mb-1">Civilité</label>
-                                <div className="flex gap-3">
-                                  {["M", "Mme"].map((v) => (
-                                    <label key={v} className="flex items-center gap-2 cursor-pointer">
-                                      <input type="radio" name={`civilite_edit_${c.id}`} value={v}
-                                        checked={(editForm as any).civilite === v}
-                                        onChange={() => setEditForm(prev => ({ ...prev, civilite: v }))}
-                                        className="accent-[#1e3a5f]" />
-                                      <span className="text-sm">{v === "M" ? "Monsieur" : "Madame"}</span>
-                                    </label>
-                                  ))}
-                                </div>
-                              </div>
-                              {([
-                                { name: "prenom", label: "Prénom" },
-                                { name: "nom", label: "Nom" },
-                                { name: "telephone", label: "Téléphone" },
-                                { name: "email", label: "Email" },
-                                { name: "rue", label: "Rue" },
-                                { name: "numero", label: "Numéro" },
-                                { name: "code_postal", label: "Code postal" },
-                                { name: "commune", label: "Commune" },
-                              ] as const).map((f) => (
-                                <div key={f.name}>
-                                  <label className="block text-xs font-medium text-gray-500 mb-1">{f.label}</label>
-                                  <input type="text"
-                                    value={(editForm as any)[f.name] ?? ""}
-                                    onChange={(e) => setEditForm(prev => ({ ...prev, [f.name]: e.target.value }))}
-                                    className="w-full border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]" />
-                                </div>
-                              ))}
-                              <div>
-                                <label className="block text-xs font-medium text-gray-500 mb-1">Type chaudière</label>
-                                <select value={editForm.type_chaudiere ?? "mazout"}
-                                  onChange={(e) => setEditForm(prev => ({ ...prev, type_chaudiere: e.target.value as "mazout" | "gaz" }))}
-                                  className="w-full border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]">
-                                  <option value="mazout">Mazout</option>
-                                  <option value="gaz">Gaz</option>
-                                </select>
-                              </div>
-                              <div>
-                                <label className="block text-xs font-medium text-gray-500 mb-1">Dernier entretien</label>
-                                <input type="date"
-                                  value={editForm.dernier_entretien ?? ""}
-                                  onChange={(e) => setEditForm(prev => ({ ...prev, dernier_entretien: e.target.value }))}
-                                  className="w-full border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]" />
-                              </div>
-                              <div>
-                                <label className="block text-xs font-medium text-gray-500 mb-1">Mode de contact</label>
-                                <select value={editForm.mode_contact ?? "email"}
-                                  onChange={(e) => setEditForm(prev => ({ ...prev, mode_contact: e.target.value as "email" | "courrier" | "sms" }))}
-                                  className="w-full border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]">
-                                  <option value="email">Email</option>
-                                  <option value="courrier">Courrier postal</option>
-                                </select>
-                              </div>
-                            </div>
-                            <div className="flex gap-2">
-                              <button onClick={() => openModal({
-                                title: "Supprimer le client",
-                                message: `Supprimer définitivement ${c.prenom} ${c.nom} ?`,
-                                confirmLabel: "Supprimer",
-                                confirmColor: "red",
-                                onConfirm: async () => {
-                                  closeModal();
-                                  await fetch("/api/admin/clients", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: c.id }) });
-                                  setEditingClient(null);
-                                  fetchData();
-                                },
-                              })} className="border border-red-200 text-red-400 hover:bg-red-50 py-1.5 px-3 rounded-lg text-xs transition-colors">
-                                <Trash2 size={13} />
-                              </button>
-                              <button onClick={() => setEditingClient(null)} className="flex-1 border border-gray-200 text-gray-500 py-1.5 rounded-lg text-xs">Annuler</button>
-                              <button disabled={savingClient} onClick={async () => {
-                                setSavingClient(true);
-                                await fetch("/api/admin/clients", {
-                                  method: "PUT",
-                                  headers: { "Content-Type": "application/json" },
-                                  body: JSON.stringify({ id: c.id, ...editForm }),
-                                });
-                                setSavingClient(false);
-                                setEditingClient(null);
-                                fetchData();
-                              }} className="flex-1 bg-[#1e3a5f] text-white py-1.5 rounded-lg text-xs font-semibold disabled:opacity-60">
-                                {savingClient ? "Enregistrement…" : "Enregistrer"}
-                              </button>
-                            </div>
-                          </div>
-                        ) : (
-                          /* Mode affichage */
-                          <div className="flex items-center justify-between gap-3">
-                            <div className="flex items-center gap-3 flex-wrap min-w-0">
+                      <div key={c.id} className={`border-b border-gray-50 last:border-0 transition-colors relative z-20 ${selectedClients.has(c.id) ? "bg-red-50/30" : "hover:bg-gray-50/50"}`}>
+                        <div className="lg:grid lg:grid-cols-[1fr_1fr_1fr_1fr_auto] lg:gap-4 flex flex-wrap items-center gap-2 px-4 py-3">
+                            {/* Nom */}
+                            <div className="flex items-center gap-2 min-w-0">
                               {selectionMode && (
-                                <input
-                                  type="checkbox"
-                                  checked={selectedClients.has(c.id)}
-                                  onChange={(e) => {
-                                    const next = new Set(selectedClients);
-                                    e.target.checked ? next.add(c.id) : next.delete(c.id);
-                                    setSelectedClients(next);
-                                  }}
-                                  className="w-4 h-4 accent-[#c0392b] shrink-0 cursor-pointer"
-                                />
+                                <input type="checkbox" checked={selectedClients.has(c.id)}
+                                  onChange={(e) => { const next = new Set(selectedClients); e.target.checked ? next.add(c.id) : next.delete(c.id); setSelectedClients(next); }}
+                                  className="w-4 h-4 accent-[#c0392b] shrink-0 cursor-pointer" />
                               )}
-                              <button onClick={() => { setEditingClient(c.id); setEditForm({ ...c }); }} className="flex items-center gap-2 flex-wrap text-left hover:opacity-70 transition-opacity">
-                                <p className="font-semibold text-[#1e3a5f] text-sm">{c.prenom} {c.nom}</p>
-                                <span className={`text-xs px-2 py-0.5 rounded-full font-medium shrink-0 ${STATUT_COLORS[c.statut]}`}>{STATUT_LABELS[c.statut]}</span>
-                                <span className="text-xs text-gray-400 hidden sm:inline">{c.commune}</span>
-                                <span className="text-xs text-gray-400 hidden md:inline">{c.type_chaudiere} — prochain : {fmtDate(c.prochain_entretien)}</span>
+                              <button onClick={() => { setEditingClient(c.id); setEditForm({ ...c }); }} className="text-left hover:opacity-70 transition-opacity min-w-0">
+                                <p className="font-semibold text-[#1e3a5f] text-sm truncate">{c.prenom} {c.nom}</p>
+                                <div className="flex items-center gap-1.5 mt-0.5">
+                                  <span className={`text-xs px-1.5 py-0.5 rounded-full font-medium ${STATUT_COLORS[c.statut]}`}>{STATUT_LABELS[c.statut]}</span>
+                                  {c.rappels_envoyes?.email && <span className="text-xs bg-green-100 text-green-700 px-1.5 py-0.5 rounded-full font-medium">✓ Email</span>}
+                                  {c.rappels_envoyes?.courrier && <span className="text-xs bg-green-100 text-green-700 px-1.5 py-0.5 rounded-full font-medium">✓ Courrier</span>}
+                                  {c.rappels_envoyes?.sms && <span className="text-xs bg-green-100 text-green-700 px-1.5 py-0.5 rounded-full font-medium">✓ SMS</span>}
+                                </div>
                               </button>
                             </div>
-                            <div className="flex items-center gap-1.5 shrink-0">
-                              {c.rappels_envoyes?.email && <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-medium hidden sm:inline">✓ Email</span>}
-                              {c.rappels_envoyes?.courrier && <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-medium hidden sm:inline">✓ Courrier</span>}
-                              {c.rappels_envoyes?.sms && <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-medium hidden sm:inline">✓ SMS</span>}
-                              <input type="date"
-                                defaultValue={new Date().toISOString().split("T")[0]}
-                                onChange={(e) => setDateEntretien(prev => ({ ...prev, [c.id]: e.target.value }))}
-                                className="border border-gray-200 rounded-lg px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#1e3a5f] w-32" />
-                              <button onClick={() => enregistrerEntretien(c.id)} disabled={marquerFait === c.id} title="Entretien fait"
-                                className="p-1.5 bg-green-500 hover:bg-green-600 text-white rounded-lg disabled:opacity-60">
-                                <ClipboardCheck size={14} />
-                              </button>
+                            {/* Commune */}
+                            <span className="text-sm text-gray-600 hidden lg:block">{c.commune}</span>
+                            {/* Chaudière */}
+                            <span className="text-sm text-gray-600 hidden lg:block capitalize">{c.type_chaudiere}</span>
+                            {/* Prochain entretien */}
+                            <span className="text-sm text-gray-600 hidden lg:block">{fmtDate(c.prochain_entretien)}</span>
+                            {/* Actions */}
+                            <div className="flex items-center gap-1.5 shrink-0 ml-auto lg:ml-0">
                               {c.mode_contact === "email" ? (
                                 <button onClick={() => sendRappel(c.id)} disabled={sending === c.id} title="Envoyer rappel email"
                                   className="p-1.5 bg-[#c0392b] hover:bg-[#a93226] text-white rounded-lg disabled:opacity-60">
@@ -999,7 +985,6 @@ export default function AdminPage() {
                               </button>
                             </div>
                           </div>
-                        )}
                       </div>
                     ))
                   )}
@@ -1007,6 +992,7 @@ export default function AdminPage() {
               </div>
             )}
             {/* Photos */}
+
             {tab === "photos" && (
               <div>
                 <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 mb-6">
