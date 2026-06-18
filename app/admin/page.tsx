@@ -169,6 +169,18 @@ function ReservationsPanel({ reservations, cancelling, onCancel }: {
 
   return (
     <div>
+      {/* Stats */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+        {vues.map((v) => (
+          <button key={v.id} onClick={() => setVue(v.id)}
+            className={`bg-white rounded-xl border p-4 text-left transition-all ${vue === v.id ? "border-[#1e3a5f] shadow-md" : "border-gray-100 hover:border-gray-300"}`}>
+            <div className={`w-2 h-2 rounded-full ${v.color} mb-2`} />
+            <p className="text-2xl font-bold text-[#1e3a5f]">{v.count}</p>
+            <p className="text-xs text-gray-500">{v.label}</p>
+          </button>
+        ))}
+      </div>
+
       {/* Calendrier */}
       <CalendrierAdmin reservations={reservations} onDayClick={(d) => setSelectedDay(prev => prev === d ? null : d)} selectedDay={selectedDay} />
 
@@ -197,18 +209,6 @@ function ReservationsPanel({ reservations, cancelling, onCancel }: {
           )}
         </div>
       )}
-
-      {/* Stats */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
-        {vues.map((v) => (
-          <button key={v.id} onClick={() => setVue(v.id)}
-            className={`bg-white rounded-xl border p-4 text-left transition-all ${vue === v.id ? "border-[#1e3a5f] shadow-md" : "border-gray-100 hover:border-gray-300"}`}>
-            <div className={`w-2 h-2 rounded-full ${v.color} mb-2`} />
-            <p className="text-2xl font-bold text-[#1e3a5f]">{v.count}</p>
-            <p className="text-xs text-gray-500">{v.label}</p>
-          </button>
-        ))}
-      </div>
 
       {/* Liste */}
       <div className="space-y-3">
