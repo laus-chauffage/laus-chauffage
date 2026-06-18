@@ -15,7 +15,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="fr" className="h-full">
       <head>
-        <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🔥</text></svg>" />
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
       </head>
       <body className={`${inter.className} min-h-full flex flex-col`}>
         <Navbar />
