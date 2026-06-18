@@ -45,7 +45,7 @@ function ReservationCard({ r, cancelling, onCancel }: { r: Reservation; cancelli
             {r.statut === "annule" && <span className="text-xs bg-red-100 text-red-700 px-2 py-0.5 rounded-full flex items-center gap-1"><XCircle size={11} />Annulé</span>}
             {r.statut === "en_attente" && <span className="text-xs bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full">En attente de confirmation</span>}
           </div>
-          <p className="text-sm font-medium text-gray-700">{r.date} à {r.creneau}</p>
+          <p className="text-sm font-medium text-gray-700">{fmtDate(r.date)} à {r.creneau}</p>
           <p className="text-sm text-gray-500">{r.service}</p>
           <p className="text-xs text-gray-400">{r.adresse}, {r.commune}</p>
           {r.notes && <p className="text-xs text-gray-400 mt-1 italic">"{r.notes}"</p>}
@@ -76,8 +76,9 @@ function ReservationsPanel({ reservations, cancelling, onCancel }: {
 
   const avenir = reservations.filter(r => r.date >= today && r.statut === "confirme");
   const attente = reservations.filter(r => r.statut === "en_attente");
-  const passes = reservations.filter(r => r.date < today && r.statut === "confirme");
-  const annules = reservations.filter(r => r.statut === "annule");
+  const limit30 = new Date(); limit30.setDate(limit30.getDate() - 30); const limit30str = limit30.toISOString().split("T")[0];
+  const passes = reservations.filter(r => r.date < today && r.date >= limit30str && r.statut === "confirme");
+  const annules = reservations.filter(r => r.statut === "annule" && r.date >= limit30str);
 
   const vues = [
     { id: "avenir", label: "À venir", count: avenir.length, color: "bg-green-500" },
@@ -116,6 +117,12 @@ function ReservationsPanel({ reservations, cancelling, onCancel }: {
       </div>
     </div>
   );
+}
+
+function fmtDate(d: string | null | undefined) {
+  if (!d) return "—";
+  const [y, m, j] = d.split("-");
+  return `${j}/${m}/${y}`;
 }
 
 const tabs = [
@@ -178,7 +185,11 @@ export default function AdminPage() {
   const [photos, setPhotos] = useState<{ name: string; url: string }[]>([]);
   const [uploadLabel, setUploadLabel] = useState("");
   const [uploadFile, setUploadFile] = useState<File | null>(null);
+  const [uploadFiles, setUploadFiles] = useState<File[]>([]);
   const [uploading, setUploading] = useState(false);
+  const [photoPreview, setPhotoPreview] = useState<{ url: string; name: string } | null>(null);
+  const [editingPhotoName, setEditingPhotoName] = useState<string | null>(null);
+  const [editingPhotoLabel, setEditingPhotoLabel] = useState("");
   const [dispos, setDispos] = useState<{ id: number; service_type: string; jour: number; heure: string; actif: boolean }[]>([]);
   const [togglingDispo, setTogglingDispo] = useState<string | null>(null);
   const [showProheatSync, setShowProheatSync] = useState(false);
@@ -236,8 +247,7 @@ export default function AdminPage() {
     setPhotos(data.photos || []);
   }
 
-  async function uploadPhoto(e: React.FormEvent) {
-    e.preventDefault();
+  async function uploadPhoto() {
     if (!uploadFile || !uploadLabel) return;
     setUploading(true);
     const form = new FormData();
@@ -246,6 +256,20 @@ export default function AdminPage() {
     await fetch("/api/admin/photos/upload", { method: "POST", body: form });
     setUploadLabel("");
     setUploadFile(null);
+    setUploading(false);
+    fetchPhotos();
+  }
+
+  async function uploadPhotos() {
+    if (!uploadFiles.length) return;
+    setUploading(true);
+    for (const file of uploadFiles) {
+      const form = new FormData();
+      form.append("file", file);
+      form.append("label", file.name.replace(/\.[^.]+$/, ""));
+      await fetch("/api/admin/photos/upload", { method: "POST", body: form });
+    }
+    setUploadFiles([]);
     setUploading(false);
     fetchPhotos();
   }
@@ -444,7 +468,7 @@ export default function AdminPage() {
                                 <div key={c.id} className={`flex items-center justify-between px-4 py-2.5 text-sm ${dejaSent ? "bg-green-50" : "bg-gray-50"}`}>
                                   <div>
                                     <span className="font-medium text-[#1e3a5f]">{c.prenom} {c.nom}</span>
-                                    <span className="text-gray-400 ml-2 text-xs">— {c.type_chaudiere} — {c.prochain_entretien}</span>
+                                    <span className="text-gray-400 ml-2 text-xs">— {c.type_chaudiere} — {fmtDate(c.prochain_entretien)}</span>
                                   </div>
                                   <div className="flex items-center gap-2">
                                     {envoyes.email && <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-medium">✓ Email envoyé</span>}
@@ -765,6 +789,20 @@ export default function AdminPage() {
                               </div>
                             </div>
                             <div className="flex gap-2">
+                              <button onClick={() => openModal({
+                                title: "Supprimer le client",
+                                message: `Supprimer définitivement ${c.prenom} ${c.nom} ?`,
+                                confirmLabel: "Supprimer",
+                                confirmColor: "red",
+                                onConfirm: async () => {
+                                  closeModal();
+                                  await fetch("/api/admin/clients", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: c.id }) });
+                                  setEditingClient(null);
+                                  fetchData();
+                                },
+                              })} className="border border-red-200 text-red-400 hover:bg-red-50 py-1.5 px-3 rounded-lg text-xs transition-colors">
+                                <Trash2 size={13} />
+                              </button>
                               <button onClick={() => setEditingClient(null)} className="flex-1 border border-gray-200 text-gray-500 py-1.5 rounded-lg text-xs">Annuler</button>
                               <button disabled={savingClient} onClick={async () => {
                                 setSavingClient(true);
@@ -801,7 +839,7 @@ export default function AdminPage() {
                                 <p className="font-semibold text-[#1e3a5f] text-sm">{c.prenom} {c.nom}</p>
                                 <span className={`text-xs px-2 py-0.5 rounded-full font-medium shrink-0 ${STATUT_COLORS[c.statut]}`}>{STATUT_LABELS[c.statut]}</span>
                                 <span className="text-xs text-gray-400 hidden sm:inline">{c.commune}</span>
-                                <span className="text-xs text-gray-400 hidden md:inline">{c.type_chaudiere} — prochain : {c.prochain_entretien || "—"}</span>
+                                <span className="text-xs text-gray-400 hidden md:inline">{c.type_chaudiere} — prochain : {fmtDate(c.prochain_entretien)}</span>
                               </button>
                             </div>
                             <div className="flex items-center gap-1.5 shrink-0">
@@ -845,29 +883,56 @@ export default function AdminPage() {
             {/* Photos */}
             {tab === "photos" && (
               <div>
-                <form onSubmit={uploadPhoto} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 mb-6">
-                  <h3 className="font-bold text-[#1e3a5f] mb-4">Ajouter une photo</h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-xs font-medium text-gray-600 mb-1">Légende</label>
-                      <input type="text" required value={uploadLabel}
-                        onChange={(e) => setUploadLabel(e.target.value)}
-                        placeholder="Ex: Chaudière gaz Viessmann"
-                        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]" />
+                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 mb-6">
+                  <h3 className="font-bold text-[#1e3a5f] mb-4">Ajouter des photos</h3>
+                  <div
+                    onDragOver={(e) => e.preventDefault()}
+                    onDrop={(e) => {
+                      e.preventDefault();
+                      const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith("image/"));
+                      if (files.length) setUploadFiles(files);
+                    }}
+                    onClick={() => document.getElementById("photo-input")?.click()}
+                    className={`border-2 border-dashed rounded-xl p-10 text-center cursor-pointer transition-colors ${uploadFiles.length > 0 ? "border-green-400 bg-green-50" : "border-gray-200 hover:border-[#1e3a5f] hover:bg-gray-50"}`}
+                  >
+                    <ImagePlus size={32} className={`mx-auto mb-2 ${uploadFiles.length > 0 ? "text-green-500" : "text-gray-300"}`} />
+                    {uploadFiles.length > 0 ? (
+                      <p className="text-sm font-medium text-green-600">{uploadFiles.length} photo(s) sélectionnée(s)</p>
+                    ) : (
+                      <>
+                        <p className="text-sm text-gray-500 font-medium">Glissez vos photos ici</p>
+                        <p className="text-xs text-gray-400 mt-1">ou cliquez pour sélectionner (plusieurs possible)</p>
+                      </>
+                    )}
+                    <input id="photo-input" type="file" accept="image/*" multiple className="hidden"
+                      onChange={(e) => setUploadFiles(Array.from(e.target.files || []))} />
+                  </div>
+                  {uploadFiles.length > 0 && (
+                    <div className="mt-4 space-y-2">
+                      {uploadFiles.map((f, i) => (
+                        <div key={i} className="flex items-center gap-2 text-xs text-gray-500">
+                          <CheckCircle size={13} className="text-green-500 shrink-0" />
+                          {f.name}
+                        </div>
+                      ))}
+                      <button disabled={uploading} onClick={uploadPhotos}
+                        className="mt-3 bg-[#c0392b] hover:bg-[#a93226] disabled:opacity-60 text-white px-5 py-2 rounded-lg text-sm font-semibold flex items-center gap-2">
+                        <ImagePlus size={16} />
+                        {uploading ? `Upload en cours…` : `Uploader ${uploadFiles.length} photo(s)`}
+                      </button>
                     </div>
-                    <div>
-                      <label className="block text-xs font-medium text-gray-600 mb-1">Fichier (jpg, png)</label>
-                      <input type="file" required accept="image/*"
-                        onChange={(e) => setUploadFile(e.target.files?.[0] || null)}
-                        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]" />
+                  )}
+                </div>
+
+                {photoPreview && (
+                  <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4" onClick={() => setPhotoPreview(null)}>
+                    <div className="relative max-w-3xl w-full" onClick={(e) => e.stopPropagation()}>
+                      <img src={photoPreview.url} alt={photoPreview.name} className="w-full max-h-[80vh] object-contain rounded-xl" />
+                      <p className="text-white text-sm text-center mt-3 opacity-70">{photoPreview.name}</p>
+                      <button onClick={() => setPhotoPreview(null)} className="absolute -top-3 -right-3 bg-white text-gray-700 rounded-full w-8 h-8 flex items-center justify-center shadow-lg hover:bg-gray-100">✕</button>
                     </div>
                   </div>
-                  <button type="submit" disabled={uploading}
-                    className="mt-4 bg-[#c0392b] hover:bg-[#a93226] disabled:opacity-60 text-white px-6 py-2 rounded-lg text-sm font-semibold flex items-center gap-2">
-                    <ImagePlus size={16} />
-                    {uploading ? "Upload en cours…" : "Ajouter la photo"}
-                  </button>
-                </form>
+                )}
 
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
                   {photos.length === 0 ? (
@@ -876,14 +941,42 @@ export default function AdminPage() {
                     </div>
                   ) : (
                     photos.map((p) => (
-                      <div key={p.name} className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-                        <img src={p.url} alt={p.name} className="w-full h-36 object-cover" />
-                        <div className="p-2 flex items-center justify-between gap-2">
-                          <p className="text-xs text-gray-500 truncate">{p.name}</p>
-                          <button onClick={() => deletePhoto(p.name)}
-                            className="text-red-400 hover:text-red-600 shrink-0">
-                            <Trash2 size={14} />
-                          </button>
+                      <div key={p.name} className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden group">
+                        <div className="relative cursor-pointer" onClick={() => setPhotoPreview(p)}>
+                          <img src={p.url} alt={p.name} className="w-full h-36 object-cover" />
+                          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
+                            <span className="text-white opacity-0 group-hover:opacity-100 text-xs font-medium transition-opacity">Aperçu</span>
+                          </div>
+                        </div>
+                        <div className="p-2">
+                          {editingPhotoName === p.name ? (
+                            <div className="flex gap-1">
+                              <input autoFocus type="text" value={editingPhotoLabel}
+                                onChange={(e) => setEditingPhotoLabel(e.target.value)}
+                                onKeyDown={async (e) => {
+                                  if (e.key === "Enter") {
+                                    await fetch("/api/admin/photos", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: p.name, label: editingPhotoLabel }) });
+                                    setEditingPhotoName(null);
+                                    fetchPhotos();
+                                  }
+                                  if (e.key === "Escape") setEditingPhotoName(null);
+                                }}
+                                className="flex-1 text-xs border border-[#1e3a5f] rounded px-1.5 py-1 focus:outline-none" />
+                              <button onClick={async () => {
+                                await fetch("/api/admin/photos", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: p.name, label: editingPhotoLabel }) });
+                                setEditingPhotoName(null);
+                                fetchPhotos();
+                              }} className="text-[#1e3a5f] hover:text-green-600"><CheckCircle size={14} /></button>
+                            </div>
+                          ) : (
+                            <div className="flex items-center justify-between gap-1">
+                              <p onClick={() => { setEditingPhotoName(p.name); setEditingPhotoLabel(p.name); }}
+                                className="text-xs text-gray-500 truncate cursor-pointer hover:text-[#1e3a5f]" title="Cliquer pour modifier">{p.name}</p>
+                              <button onClick={() => deletePhoto(p.name)} className="text-red-400 hover:text-red-600 shrink-0">
+                                <Trash2 size={14} />
+                              </button>
+                            </div>
+                          )}
                         </div>
                       </div>
                     ))

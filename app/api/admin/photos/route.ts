@@ -20,3 +20,14 @@ export async function DELETE(req: NextRequest) {
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   return NextResponse.json({ success: true });
 }
+
+export async function PATCH(req: NextRequest) {
+  const { name, label } = await req.json();
+  const sb = getSupabase();
+  const ext = name.split(".").pop();
+  const newName = `${label.trim().replace(/[^a-zA-Z0-9\-_\s]/g, "").replace(/\s+/g, "-")}.${ext}`;
+  if (newName === name) return NextResponse.json({ success: true });
+  const { error } = await sb.storage.from("photos").move(name, newName);
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  return NextResponse.json({ success: true, newName });
+}
