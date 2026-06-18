@@ -19,7 +19,7 @@ export default function AdminLogin() {
       body: JSON.stringify({ password }),
     });
     if (res.ok) {
-      router.push("/admin");
+      window.location.href = "/admin";
     } else {
       setError(true);
     }
@@ -47,7 +47,7 @@ export default function AdminLogin() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full border border-gray-200 rounded-lg pl-9 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]"
-                placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
+                placeholder="••••••••"
               />
             </div>
           </div>
@@ -56,7 +56,7 @@ export default function AdminLogin() {
             type="submit"
             disabled={loading}
             className="w-full bg-[#1e3a5f] hover:bg-[#2d5a8e] disabled:opacity-60 text-white py-3 rounded-lg font-semibold transition-colors">
-            {loading ? "Connexionâ€¦" : "Se connecter"}
+            {loading ? "Connexion…" : "Se connecter"}
           </button>
         </form>
       </div>
