@@ -120,8 +120,8 @@ export default function Home() {
       {/* Zone d'intervention */}
       <section className="py-16 bg-gray-50">
         <div className="max-w-6xl mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold text-[#1e3a5f] mb-4">Un chauffagiste local, proche de chez vous</h2>
-          <p className="text-gray-500 mb-2 max-w-xl mx-auto">Basé à Rebecq, j'interviens rapidement en Brabant wallon et dans le Hainaut.</p>
+          <h2 className="text-3xl font-bold text-[#1e3a5f] mb-4">Votre voisin chauffagiste</h2>
+          <p className="text-gray-500 mb-2 max-w-xl mx-auto">Basé à Rebecq, je connais le coin et j'interviens rapidement — sans sous-traitant, sans intermédiaire. Pas une grande enseigne, un vrai indépendant local.</p>
           <p className="text-gray-400 text-sm mb-8">Rebecq · Tubize · Braine-le-Comte · Soignies · Enghien · Braine-le-Château · Braine-l'Alleud · Ittre · et environs</p>
           <a href="/reservation" className="inline-block bg-[#c0392b] hover:bg-[#a93226] text-white px-6 py-3 rounded-xl font-semibold transition-colors text-sm">
             Prendre rendez-vous

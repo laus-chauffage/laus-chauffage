@@ -181,6 +181,12 @@ export default function AdminPage() {
   const [uploading, setUploading] = useState(false);
   const [dispos, setDispos] = useState<{ id: number; service_type: string; jour: number; heure: string; actif: boolean }[]>([]);
   const [togglingDispo, setTogglingDispo] = useState<string | null>(null);
+  const [showProheatSync, setShowProheatSync] = useState(false);
+  const [proheatKey, setProheatKey] = useState("");
+  const [syncing, setSyncing] = useState(false);
+  const [syncResult, setSyncResult] = useState<{ created: number; updated: number; skipped: number; total: number; error?: string } | null>(null);
+  const [selectedClients, setSelectedClients] = useState<Set<string>>(new Set());
+  const [deletingBatch, setDeletingBatch] = useState(false);
 
   useEffect(() => {
     fetchData();
@@ -520,12 +526,59 @@ export default function AdminPage() {
                         e.target.value = "";
                       }} />
                     </label>
+                    <button onClick={() => { setShowProheatSync(!showProheatSync); setSyncResult(null); }}
+                      className="flex items-center gap-2 border border-[#1e3a5f] text-[#1e3a5f] hover:bg-[#1e3a5f] hover:text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></svg>
+                      Sync ProHeat
+                    </button>
                     <button onClick={() => setShowNewClient(!showNewClient)}
                       className="flex items-center gap-2 bg-[#c0392b] text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-[#a93226] transition-colors">
                       <Plus size={16} />Nouveau client
                     </button>
                   </div>
                 </div>
+
+                {showProheatSync && (
+                  <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-4">
+                    <p className="text-sm font-semibold text-[#1e3a5f] mb-2">Synchronisation ProHeat / Testo</p>
+                    <p className="text-xs text-gray-500 mb-3">Entrez votre clé API ProHeat (disponible dans Pro+ → Paramètres → API).</p>
+                    <div className="flex gap-2">
+                      <input
+                        type="password"
+                        placeholder="X-expose-secret-key"
+                        value={proheatKey}
+                        onChange={(e) => setProheatKey(e.target.value)}
+                        className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]"
+                      />
+                      <button
+                        disabled={!proheatKey || syncing}
+                        onClick={async () => {
+                          setSyncing(true);
+                          setSyncResult(null);
+                          const res = await fetch("/api/admin/proheat-sync", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ secretKey: proheatKey }),
+                          });
+                          const data = await res.json();
+                          setSyncResult(res.ok ? data : { created: 0, updated: 0, skipped: 0, total: 0, error: data.error });
+                          setSyncing(false);
+                          if (res.ok) { fetchData(); setShowProheatSync(false); }
+                        }}
+                        className="bg-[#1e3a5f] text-white px-4 py-2 rounded-lg text-sm font-semibold disabled:opacity-40 hover:bg-[#2a4f80] transition-colors"
+                      >
+                        {syncing ? "Sync…" : "Lancer"}
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {syncResult && (
+                  <div className={`flex items-center justify-between gap-3 rounded-xl px-4 py-3 text-sm mb-2 ${syncResult.error ? "bg-red-50 border border-red-200 text-red-700" : "bg-green-50 border border-green-200 text-green-700"}`}>
+                    <span>{syncResult.error ? `Erreur : ${syncResult.error}` : `Sync OK — ${syncResult.created} créé(s), ${syncResult.updated} mis à jour, ${syncResult.skipped} ignoré(s) sur ${syncResult.total} clients ProHeat.`}</span>
+                    <button onClick={() => setSyncResult(null)} className="text-gray-400 hover:text-gray-600"><XCircle size={16} /></button>
+                  </div>
+                )}
 
                 {importResult && (
                   <div className={`flex items-center justify-between gap-3 rounded-xl px-4 py-3 text-sm mb-2 ${importResult.error ? "bg-red-50 border border-red-200 text-red-700" : importResult.inserted > 0 ? "bg-green-50 border border-green-200 text-green-700" : "bg-yellow-50 border border-yellow-200 text-yellow-700"}`}>
@@ -601,12 +654,46 @@ export default function AdminPage() {
                 )}
 
                 {/* Liste clients */}
+                {selectedClients.size > 0 && (
+                  <div className="flex items-center justify-between bg-red-50 border border-red-200 rounded-xl px-4 py-3 mb-3">
+                    <span className="text-sm font-medium text-red-700">{selectedClients.size} client(s) sélectionné(s)</span>
+                    <div className="flex gap-2">
+                      <button onClick={() => setSelectedClients(new Set())} className="text-xs text-gray-500 hover:text-gray-700 px-3 py-1.5 rounded-lg border border-gray-200 bg-white">
+                        Désélectionner
+                      </button>
+                      <button
+                        disabled={deletingBatch}
+                        onClick={() => openModal({
+                          title: "Supprimer les clients sélectionnés",
+                          message: `Supprimer définitivement ${selectedClients.size} client(s) ? Cette action est irréversible.`,
+                          confirmLabel: "Supprimer",
+                          confirmColor: "red",
+                          onConfirm: async () => {
+                            closeModal();
+                            setDeletingBatch(true);
+                            await Promise.all(
+                              [...selectedClients].map((id) =>
+                                fetch("/api/admin/clients", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id }) })
+                              )
+                            );
+                            setSelectedClients(new Set());
+                            setDeletingBatch(false);
+                            fetchData();
+                          },
+                        })}
+                        className="flex items-center gap-1.5 bg-red-600 hover:bg-red-700 text-white text-xs font-semibold px-3 py-1.5 rounded-lg disabled:opacity-50 transition-colors">
+                        <Trash2 size={13} />{deletingBatch ? "Suppression…" : "Supprimer la sélection"}
+                      </button>
+                    </div>
+                  </div>
+                )}
+
                 <div className="space-y-3">
                   {clientsFiltres.length === 0 ? (
                     <div className="bg-white rounded-2xl p-10 text-center text-gray-400 border border-gray-100">Aucun client.</div>
                   ) : (
                     clientsFiltres.map((c) => (
-                      <div key={c.id} className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+                      <div key={c.id} className={`bg-white rounded-xl shadow-sm border p-4 transition-colors ${selectedClients.has(c.id) ? "border-red-300 bg-red-50/30" : "border-gray-100"}`}>
                         {editingClient === c.id ? (
                           /* Mode édition */
                           <div>
@@ -689,6 +776,16 @@ export default function AdminPage() {
                           /* Mode affichage */
                           <div className="flex items-center justify-between gap-3">
                             <div className="flex items-center gap-3 flex-wrap min-w-0">
+                              <input
+                                type="checkbox"
+                                checked={selectedClients.has(c.id)}
+                                onChange={(e) => {
+                                  const next = new Set(selectedClients);
+                                  e.target.checked ? next.add(c.id) : next.delete(c.id);
+                                  setSelectedClients(next);
+                                }}
+                                className="w-4 h-4 accent-[#c0392b] shrink-0 cursor-pointer"
+                              />
                               <p className="font-semibold text-[#1e3a5f] text-sm">{c.prenom} {c.nom}</p>
                               <span className={`text-xs px-2 py-0.5 rounded-full font-medium shrink-0 ${STATUT_COLORS[c.statut]}`}>{STATUT_LABELS[c.statut]}</span>
                               <span className="text-xs text-gray-400 hidden sm:inline">{c.commune}</span>
