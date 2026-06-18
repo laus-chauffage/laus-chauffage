@@ -99,12 +99,13 @@ async function runSync(days: number) {
       // Cherche le client par proheat_id
       const { data: existing } = await sb
         .from("clients")
-        .select("id, type_chaudiere")
+        .select("id, type_chaudiere, dernier_entretien")
         .eq("proheat_id", String(cert.client_id))
         .maybeSingle();
 
       if (existing) {
-        // Client connu → mise à jour des dates
+        // Met à jour seulement si la certification est plus récente
+        if (existing.dernier_entretien && existing.dernier_entretien >= certDate) { skipped++; continue; }
         const prochain = calcProchainEntretien(certDate, existing.type_chaudiere);
         await sb.from("clients").update({
           dernier_entretien: certDate,
