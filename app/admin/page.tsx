@@ -264,13 +264,12 @@ export default function AdminPage() {
     type_chaudiere: "mazout", dernier_entretien: "", mode_contact: "email",
   });
   const [filtreStatut, setFiltreStatut] = useState("tous");
+  const [recherche, setRecherche] = useState("");
   const [sending, setSending] = useState<string | null>(null);
   const [cancelling, setCancelling] = useState<string | null>(null);
   const [editingClient, setEditingClient] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<Partial<Client>>({});
   const [savingClient, setSavingClient] = useState(false);
-  const [importing, setImporting] = useState(false);
-  const [importResult, setImportResult] = useState<{ inserted: number; skipped: number; error?: string } | null>(null);
   const [rappelsMois, setRappelsMois] = useState<{ clients: Client[]; mois: string } | null>(null);
   const [loadingRappels, setLoadingRappels] = useState(false);
   const [sendingBatch, setSendingBatch] = useState(false);
@@ -470,7 +469,14 @@ export default function AdminPage() {
     markRappelSent(client.id, "courrier");
   }
 
-  const clientsFiltres = clients.filter(c => filtreStatut === "tous" || c.statut === filtreStatut);
+  const clientsFiltres = clients.filter(c => {
+    if (filtreStatut !== "tous" && c.statut !== filtreStatut) return false;
+    if (recherche) {
+      const q = recherche.toLowerCase();
+      return `${c.prenom} ${c.nom} ${c.commune}`.toLowerCase().includes(q);
+    }
+    return true;
+  });
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -617,7 +623,14 @@ export default function AdminPage() {
                 </div>
 
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
-                  <div className="flex gap-2">
+                  <div className="flex flex-wrap gap-2 items-center">
+                    <input
+                      type="text"
+                      value={recherche}
+                      onChange={e => setRecherche(e.target.value)}
+                      placeholder="Rechercher un client…"
+                      className="border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e3a5f] w-48"
+                    />
                     {["tous", "en_retard", "bientot", "ok"].map((s) => (
                       <button key={s} onClick={() => setFiltreStatut(s)}
                         className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${filtreStatut === s ? "bg-[#1e3a5f] text-white border-[#1e3a5f]" : "border-gray-200 text-gray-500 hover:border-[#1e3a5f]"}`}>
@@ -626,23 +639,6 @@ export default function AdminPage() {
                     ))}
                   </div>
                   <div className="flex gap-2">
-                    <label className={`flex items-center gap-2 border border-[#1e3a5f] text-[#1e3a5f] hover:bg-[#1e3a5f] hover:text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors cursor-pointer ${importing ? "opacity-50 pointer-events-none" : ""}`}>
-                      <Upload size={16} />
-                      {importing ? "Import…" : "Import Google CSV"}
-                      <input type="file" accept=".csv" className="hidden" onChange={async (e) => {
-                        const file = e.target.files?.[0];
-                        if (!file) return;
-                        setImporting(true);
-                        setImportResult(null);
-                        const text = await file.text();
-                        const res = await fetch("/api/admin/clients/import", { method: "POST", body: text });
-                        const data = await res.json();
-                        setImportResult(res.ok ? data : { inserted: 0, skipped: 0, error: data.error });
-                        setImporting(false);
-                        fetchData();
-                        e.target.value = "";
-                      }} />
-                    </label>
                     <button onClick={() => { setShowProheatSync(!showProheatSync); setSyncResult(null); }}
                       className="flex items-center gap-2 border border-[#1e3a5f] text-[#1e3a5f] hover:bg-[#1e3a5f] hover:text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors">
                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></svg>
@@ -678,28 +674,6 @@ export default function AdminPage() {
                     >
                       {syncing ? "Synchronisation…" : "Lancer la synchro"}
                     </button>
-                    <button
-                      disabled={syncing}
-                      onClick={() => openModal({
-                        title: "Import initial ProHeat",
-                        message: "Importer tous les clients des 18 derniers mois depuis ProHeat ? L'opération peut prendre plusieurs minutes.",
-                        confirmLabel: "Lancer l'import",
-                        confirmColor: "orange",
-                        onConfirm: async () => {
-                          closeModal();
-                          setSyncing(true);
-                          setSyncResult(null);
-                          const res = await fetch("/api/admin/proheat-sync", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ days: 548 }) });
-                          const data = await res.json();
-                          setSyncResult(res.ok ? data : { created: 0, updated: 0, skipped: 0, certs_found: 0, error: data.error });
-                          setSyncing(false);
-                          if (res.ok) setTimeout(() => fetchData(), 300);
-                        },
-                      })}
-                      className="border border-[#1e3a5f] text-[#1e3a5f] px-4 py-2 rounded-lg text-sm font-semibold disabled:opacity-40 hover:bg-[#1e3a5f] hover:text-white transition-colors"
-                    >
-                      Import initial (18 mois)
-                    </button>
                   </div>
                 )}
 
@@ -710,12 +684,6 @@ export default function AdminPage() {
                   </div>
                 )}
 
-                {importResult && (
-                  <div className={`flex items-center justify-between gap-3 rounded-xl px-4 py-3 text-sm mb-2 ${importResult.error ? "bg-red-50 border border-red-200 text-red-700" : importResult.inserted > 0 ? "bg-green-50 border border-green-200 text-green-700" : "bg-yellow-50 border border-yellow-200 text-yellow-700"}`}>
-                    <span>{importResult.error ? `Erreur : ${importResult.error}` : `${importResult.inserted} client(s) importé(s)${importResult.skipped > 0 ? `, ${importResult.skipped} ignoré(s) (doublon)` : ""}.`}</span>
-                    <button onClick={() => setImportResult(null)} className="text-gray-400 hover:text-gray-600"><XCircle size={16} /></button>
-                  </div>
-                )}
 
                 {/* Formulaire nouveau client */}
                 {showNewClient && (
