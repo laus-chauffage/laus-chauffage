@@ -31,12 +31,12 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
-  const { civilite, prenom, nom, email, telephone, adresse, code_postal, commune, type_chaudiere, dernier_entretien, mode_contact } = body;
+  const { civilite, prenom, nom, email, telephone, rue, numero, code_postal, commune, type_chaudiere, dernier_entretien, mode_contact } = body;
 
   const prochain_entretien = calcProchainEntretien(dernier_entretien, type_chaudiere);
 
   const { error } = await getSupabase().from("clients").insert({
-    civilite: civilite || 'M', prenom, nom, email: email || null, telephone, adresse, code_postal: code_postal || null, commune,
+    civilite: civilite || 'M', prenom, nom, email: email || null, telephone, rue, numero: numero || null, code_postal: code_postal || null, commune,
     type_chaudiere, dernier_entretien, prochain_entretien, mode_contact,
   });
 
@@ -53,12 +53,12 @@ export async function DELETE(req: NextRequest) {
 
 export async function PUT(req: NextRequest) {
   const body = await req.json();
-  const { id, civilite, prenom, nom, email, telephone, adresse, code_postal, commune, type_chaudiere, dernier_entretien, mode_contact } = body;
+  const { id, civilite, prenom, nom, email, telephone, rue, numero, code_postal, commune, type_chaudiere, dernier_entretien, mode_contact } = body;
 
   const prochain_entretien = dernier_entretien ? calcProchainEntretien(dernier_entretien, type_chaudiere) : null;
 
   const { error } = await getSupabase().from("clients").update({
-    civilite: civilite || 'M', prenom, nom, email: email || null, telephone, adresse, code_postal: code_postal || null, commune,
+    civilite: civilite || 'M', prenom, nom, email: email || null, telephone, rue, numero: numero || null, code_postal: code_postal || null, commune,
     type_chaudiere, dernier_entretien: dernier_entretien || null,
     prochain_entretien, mode_contact,
   }).eq("id", id);

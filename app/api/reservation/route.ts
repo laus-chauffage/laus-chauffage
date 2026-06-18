@@ -14,7 +14,7 @@ const SERVICE_LABELS: Record<string, string> = {
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
-  const { service, date, creneau, nom, prenom, email, telephone, adresse, commune, notes } = body;
+  const { service, date, creneau, nom, prenom, email, telephone, rue, numero, commune, notes } = body;
 
   const serviceLabel = SERVICE_LABELS[service] || service;
   const dateFormatted = format(parse(date, "yyyy-MM-dd", new Date()), "EEEE d MMMM yyyy", { locale: fr });
@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
   const tokenExpiresAt = addHours(new Date(), 24).toISOString();
 
   const { error } = await getSupabase().from("reservations").insert({
-    nom, prenom, email, telephone, adresse, commune,
+    nom, prenom, email, telephone, rue, numero: numero || null, commune,
     service, date, creneau, notes,
     statut: "en_attente",
     token,
@@ -36,6 +36,7 @@ export async function POST(req: NextRequest) {
   }
 
   const confirmUrl = `${process.env.NEXT_PUBLIC_SITE_URL}/api/reservation/confirmer?token=${token}`;
+  const adresse = [numero, rue].filter(Boolean).join(" ");
 
   try {
     await sendConfirmationRequestEmail({

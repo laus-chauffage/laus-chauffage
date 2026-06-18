@@ -9,7 +9,8 @@ type Client = {
   nom: string;
   email: string | null;
   telephone: string;
-  adresse: string;
+  rue: string;
+  numero?: string;
   commune: string;
   type_chaudiere: "mazout" | "gaz";
   dernier_entretien: string;
@@ -25,7 +26,8 @@ type Reservation = {
   nom: string;
   email: string;
   telephone: string;
-  adresse: string;
+  rue: string;
+  numero?: string;
   commune: string;
   service: string;
   date: string;
@@ -48,7 +50,7 @@ function ReservationCard({ r, cancelling, onCancel }: { r: Reservation; cancelli
           </div>
           <p className="text-sm font-medium text-gray-700">{fmtDate(r.date)} à {r.creneau}</p>
           <p className="text-sm text-gray-500">{r.service}</p>
-          <p className="text-xs text-gray-400">{r.adresse}, {r.commune}</p>
+          <p className="text-xs text-gray-400">{[r.numero, r.rue].filter(Boolean).join(" ")}, {r.commune}</p>
           {r.notes && <p className="text-xs text-gray-400 mt-1 italic">"{r.notes}"</p>}
         </div>
         <div className="flex gap-2 text-sm flex-wrap shrink-0">
@@ -258,7 +260,7 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(true);
   const [showNewClient, setShowNewClient] = useState(false);
   const [newClient, setNewClient] = useState({
-    civilite: "M", prenom: "", nom: "", email: "", telephone: "", adresse: "", code_postal: "", commune: "",
+    civilite: "M", prenom: "", nom: "", email: "", telephone: "", rue: "", numero: "", code_postal: "", commune: "",
     type_chaudiere: "mazout", dernier_entretien: "", mode_contact: "email",
   });
   const [filtreStatut, setFiltreStatut] = useState("tous");
@@ -436,7 +438,7 @@ export default function AdminPage() {
       body: JSON.stringify(newClient),
     });
     setShowNewClient(false);
-    setNewClient({ civilite: "M", prenom: "", nom: "", email: "", telephone: "", adresse: "", code_postal: "", commune: "", type_chaudiere: "mazout", dernier_entretien: "", mode_contact: "email" });
+    setNewClient({ civilite: "M", prenom: "", nom: "", email: "", telephone: "", rue: "", numero: "", code_postal: "", commune: "", type_chaudiere: "mazout", dernier_entretien: "", mode_contact: "email" });
     fetchData();
   }
 
@@ -758,7 +760,8 @@ export default function AdminPage() {
                         { name: "nom", label: "Nom" },
                         { name: "telephone", label: "Téléphone" },
                         { name: "email", label: "Email (optionnel)", required: false },
-                        { name: "adresse", label: "Adresse" },
+                        { name: "rue", label: "Rue" },
+                        { name: "numero", label: "Numéro", required: false },
                         { name: "code_postal", label: "Code postal" },
                         { name: "commune", label: "Commune" },
                       ].map((f) => (
@@ -868,7 +871,8 @@ export default function AdminPage() {
                                 { name: "nom", label: "Nom" },
                                 { name: "telephone", label: "Téléphone" },
                                 { name: "email", label: "Email" },
-                                { name: "adresse", label: "Adresse" },
+                                { name: "rue", label: "Rue" },
+                                { name: "numero", label: "Numéro" },
                                 { name: "code_postal", label: "Code postal" },
                                 { name: "commune", label: "Commune" },
                               ] as const).map((f) => (

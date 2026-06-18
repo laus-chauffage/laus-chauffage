@@ -77,7 +77,8 @@ export async function createCalendarEvent(data: {
   prenom: string;
   email: string;
   telephone: string;
-  adresse: string;
+  rue: string;
+  numero?: string;
   commune: string;
   service: string;
   date: string;
@@ -94,8 +95,8 @@ export async function createCalendarEvent(data: {
     calendarId: process.env.GOOGLE_CALENDAR_ID || "primary",
     requestBody: {
       summary: `${data.service} — ${data.prenom} ${data.nom}`,
-      description: `Client : ${data.prenom} ${data.nom}\nTél : ${data.telephone}\nEmail : ${data.email}\nAdresse : ${data.adresse}, ${data.commune}\n\nNotes : ${data.notes || "—"}`,
-      location: `${data.adresse}, ${data.commune}`,
+      description: `Client : ${data.prenom} ${data.nom}\nTél : ${data.telephone}\nEmail : ${data.email}\nAdresse : ${[data.numero, data.rue].filter(Boolean).join(" ")}, ${data.commune}\n\nNotes : ${data.notes || "—"}`,
+      location: `${[data.numero, data.rue].filter(Boolean).join(" ")}, ${data.commune}`,
       // Pass as Brussels local string + timeZone → Google places it at the right time
       start: { dateTime: toBrusselsLocalStr(startUtc), timeZone: "Europe/Brussels" },
       end: { dateTime: toBrusselsLocalStr(endUtc), timeZone: "Europe/Brussels" },

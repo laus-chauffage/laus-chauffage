@@ -10,7 +10,7 @@ export function buildLettre(client: any, today: string): string {
     ? format(parseISO(client.prochain_entretien), "MMMM yyyy", { locale: fr })
     : "prochainement";
   const adresseComplete = [
-    client.adresse,
+    [client.numero, client.rue].filter(Boolean).join(" "),
     [client.code_postal, client.commune].filter(Boolean).join(" "),
   ].filter(Boolean).join("<br>");
 

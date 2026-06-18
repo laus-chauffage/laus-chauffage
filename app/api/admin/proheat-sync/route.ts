@@ -95,7 +95,8 @@ export async function POST(req: NextRequest) {
       const contactFields = {
         email: c.email || undefined,
         telephone: phone,
-        adresse: c.address || c.street || "",
+        rue: c.street || c.address || "",
+        numero: c.house_number || c.number || null,
         commune: c.city || "",
         code_postal: c.postal_code || "",
         ...(dates ? {
@@ -132,7 +133,8 @@ export async function POST(req: NextRequest) {
             nom,
             email: c.email || null,
             telephone: phone,
-            adresse: c.address || c.street || "—",
+            rue: c.street || c.address || "—",
+            numero: c.house_number || c.number || null,
             commune: c.city || "—",
             code_postal: c.postal_code || null,
             type_chaudiere: "gaz",

@@ -39,7 +39,7 @@ export async function GET(req: NextRequest) {
   try {
     googleEventId = await createCalendarEvent({
       nom: resa.nom, prenom: resa.prenom, email: resa.email,
-      telephone: resa.telephone, adresse: resa.adresse, commune: resa.commune,
+      telephone: resa.telephone, rue: resa.rue, numero: resa.numero, commune: resa.commune,
       service: serviceLabel, date: resa.date, creneau: resa.creneau, notes: resa.notes,
     });
   } catch (err) {

@@ -35,7 +35,7 @@ function ReservationContent() {
   const [loadingSlots, setLoadingSlots] = useState(false);
   const [joursActifs, setJoursActifs] = useState<number[]>([1, 2, 3, 4, 5]);
 
-  const [form, setForm] = useState({ nom: "", prenom: "", email: "", telephone: "", adresse: "", commune: "", communeAutre: "", notes: "" });
+  const [form, setForm] = useState({ nom: "", prenom: "", email: "", telephone: "", rue: "", numero: "", commune: "", communeAutre: "", notes: "" });
   const [done, setDone] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
@@ -105,7 +105,7 @@ function ReservationContent() {
             setService("");
             setDate(undefined);
             setCreneau("");
-            setForm({ nom: "", prenom: "", email: "", telephone: "", adresse: "", commune: "", communeAutre: "", notes: "" });
+            setForm({ nom: "", prenom: "", email: "", telephone: "", rue: "", numero: "", commune: "", communeAutre: "", notes: "" });
           }} className="bg-[#c0392b] hover:bg-[#a93226] text-white px-6 py-3 rounded-xl font-semibold transition-colors">
             Nouvelle réservation
           </button>
@@ -235,7 +235,8 @@ function ReservationContent() {
                 {[
                   { name: "email", label: "Email", type: "email", required: true },
                   { name: "telephone", label: "Téléphone", type: "tel", required: true },
-                  { name: "adresse", label: "Adresse (rue + numéro)", type: "text", required: true },
+                  { name: "rue", label: "Rue", type: "text", required: true },
+                  { name: "numero", label: "Numéro", type: "text", required: true },
                 ].map((f) => (
                   <div key={f.name}>
                     <label className="block text-sm font-medium text-gray-700 mb-1">{f.label} *</label>
