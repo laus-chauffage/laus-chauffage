@@ -2,13 +2,14 @@ import { NextRequest, NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
 import { sendRappelEmail } from "@/lib/mailer";
 import { addMonths, startOfMonth, endOfMonth, format } from "date-fns";
+import { fr } from "date-fns/locale";
 
 function getMoisCible() {
   const moisProchain = addMonths(new Date(), 1);
   return {
     debut: format(startOfMonth(moisProchain), "yyyy-MM-dd"),
     fin: format(endOfMonth(moisProchain), "yyyy-MM-dd"),
-    label: format(moisProchain, "MMMM yyyy"),
+    label: format(moisProchain, "MMMM yyyy", { locale: fr }),
   };
 }
 
