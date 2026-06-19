@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabase, calcProchainEntretien } from "@/lib/supabase";
+import { sendSatisfactionEmail } from "@/lib/mailer";
 import { format, subDays, parse } from "date-fns";
 
 const PROHEAT_BASE = "https://api.testocloud.be/expose";
@@ -91,6 +92,7 @@ async function runSync(days: number) {
     let updated = 0;
     let created = 0;
     let skipped = 0;
+    let satisfaction = 0;
 
     for (const cert of certs) {
       const certDate = parseProheatDate(cert.certification_date);
@@ -112,6 +114,12 @@ async function runSync(days: number) {
           prochain_entretien: prochain,
         }).eq("id", existing.id);
         updated++;
+        // Email satisfaction si le client a un email
+        const { data: clientFull } = await sb.from("clients").select("prenom, nom, email, civilite").eq("id", existing.id).maybeSingle();
+        if (clientFull?.email) {
+          await sendSatisfactionEmail({ prenom: clientFull.prenom, nom: clientFull.nom, email: clientFull.email, civilite: clientFull.civilite }).catch(() => {});
+          satisfaction++;
+        }
       } else {
         // Nouveau client → récupère ses infos depuis ProHeat (on passe la date du cert pour le retrouver)
         await new Promise(r => setTimeout(r, days > 30 ? 1000 : 300));
@@ -168,6 +176,7 @@ async function runSync(days: number) {
       updated,
       created,
       skipped,
+      satisfaction,
     });
   } catch (e: any) {
     return NextResponse.json({ error: e.message || "Erreur sync" }, { status: 500 });

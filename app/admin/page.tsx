@@ -330,7 +330,7 @@ export default function AdminPage() {
   const [showProheatSync, setShowProheatSync] = useState(false);
   const [proheatKey, setProheatKey] = useState("");
   const [syncing, setSyncing] = useState(false);
-  const [syncResult, setSyncResult] = useState<{ created: number; updated: number; skipped: number; certs_found: number; error?: string } | null>(null);
+  const [syncResult, setSyncResult] = useState<{ created: number; updated: number; skipped: number; certs_found: number; satisfaction?: number; error?: string } | null>(null);
   const [selectionMode, setSelectionMode] = useState(false);
   const [selectedClients, setSelectedClients] = useState<Set<string>>(new Set());
   const [deletingBatch, setDeletingBatch] = useState(false);
@@ -708,7 +708,7 @@ export default function AdminPage() {
 
                 {syncResult && (
                   <div className={`flex items-center justify-between gap-3 rounded-xl px-4 py-3 text-sm mb-2 ${syncResult.error ? "bg-red-50 border border-red-200 text-red-700" : "bg-green-50 border border-green-200 text-green-700"}`}>
-                    <span>{syncResult.error ? `Erreur : ${syncResult.error}` : `Sync OK — ${syncResult.created} créé(s), ${syncResult.updated} mis à jour, ${syncResult.skipped} ignoré(s) sur ${syncResult.certs_found} certificats.`}</span>
+                    <span>{syncResult.error ? `Erreur : ${syncResult.error}` : `Sync OK — ${syncResult.created} créé(s), ${syncResult.updated} mis à jour, ${syncResult.skipped} ignoré(s) sur ${syncResult.certs_found} certificats.${syncResult.satisfaction ? ` ${syncResult.satisfaction} email(s) satisfaction envoyé(s).` : ""}`}</span>
                     <button onClick={() => setSyncResult(null)} className="text-gray-400 hover:text-gray-600"><XCircle size={16} /></button>
                   </div>
                 )}
@@ -959,17 +959,19 @@ export default function AdminPage() {
                             <span className="text-sm text-gray-600 hidden lg:block">{fmtDate(c.prochain_entretien)}</span>
                             {/* Actions */}
                             <div className="flex items-center gap-1.5 shrink-0 ml-auto lg:ml-0">
+                              {/* Email */}
                               {c.mode_contact === "email" ? (
                                 <button onClick={() => sendRappel(c.id)} disabled={sending === c.id} title="Envoyer rappel email"
-                                  className="p-1.5 bg-[#c0392b] hover:bg-[#a93226] text-white rounded-lg disabled:opacity-60">
-                                  <Send size={14} />
+                                  className={`p-1.5 rounded-lg border transition-colors disabled:opacity-60 ${c.rappels_envoyes?.email ? "bg-green-500 border-green-500 text-white" : "border-gray-300 text-gray-400 hover:border-green-500 hover:text-green-500"}`}>
+                                  <MailCheck size={14} />
                                 </button>
                               ) : (
                                 <button onClick={() => printRappel(c)} title="Imprimer courrier"
-                                  className="p-1.5 border border-[#1e3a5f] text-[#1e3a5f] hover:bg-[#1e3a5f] hover:text-white rounded-lg transition-colors">
+                                  className={`p-1.5 rounded-lg border transition-colors ${c.rappels_envoyes?.courrier ? "bg-green-500 border-green-500 text-white" : "border-gray-300 text-gray-400 hover:border-green-500 hover:text-green-500"}`}>
                                   <Printer size={14} />
                                 </button>
                               )}
+                              {/* SMS */}
                               <button onClick={async () => {
                                 setSending(c.id + "_sms");
                                 await fetch("/api/rappels", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ clientId: c.id, mode: "sms" }) });
@@ -977,8 +979,8 @@ export default function AdminPage() {
                                 markRappelSent(c.id, "sms");
                                 showToast("SMS envoyé ✓");
                               }} disabled={sending === c.id + "_sms"} title="Envoyer rappel SMS"
-                                className="p-1.5 bg-green-600 hover:bg-green-700 text-white rounded-lg disabled:opacity-60">
-                                <MailCheck size={14} />
+                                className={`p-1.5 rounded-lg border transition-colors disabled:opacity-60 ${c.rappels_envoyes?.sms ? "bg-green-500 border-green-500 text-white" : "border-gray-300 text-gray-400 hover:border-green-500 hover:text-green-500"}`}>
+                                <Send size={14} />
                               </button>
                             </div>
                           </div>
