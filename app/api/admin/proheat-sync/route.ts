@@ -165,6 +165,10 @@ async function runSync(days: number) {
             skipped++;
           } else {
             created++;
+            if (c.email) {
+              await sendSatisfactionEmail({ prenom: prenom || "", nom, email: c.email }).catch(() => {});
+              satisfaction++;
+            }
           }
         }
       }
