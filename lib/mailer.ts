@@ -251,6 +251,110 @@ export async function sendRappelEmail(data: {
   });
 }
 
+export async function sendCancellationEmail(data: {
+  prenom: string;
+  nom: string;
+  email: string;
+  service: string;
+  date: string;
+  creneau: string;
+}) {
+  await resend.emails.send({
+    from: FROM,
+    to: data.email,
+    subject: `Annulation de votre rendez-vous — Laus Chauffage`,
+    html: `<!DOCTYPE html>
+<html lang="fr">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#f0f4f8;font-family:Arial,sans-serif">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#f0f4f8;padding:32px 16px">
+<tr><td align="center">
+<table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%">
+
+  <!-- En-tête -->
+  <tr>
+    <td style="background:#1e3a5f;padding:24px 32px;border-radius:10px 10px 0 0">
+      <table width="100%" cellpadding="0" cellspacing="0">
+        <tr>
+          <td>
+            <span style="font-size:22px;font-weight:bold;color:white">Laus </span><span style="font-size:22px;font-weight:bold;color:#c0392b">|</span><span style="font-size:22px;font-weight:bold;color:white"> Chauffage</span>
+            <div style="font-size:11px;color:#aac4e0;margin-top:3px">Votre chauffagiste en Brabant wallon</div>
+          </td>
+          <td align="right" style="font-size:11px;color:#cce0f5;line-height:1.7">
+            +32 475 20 04 87<br>
+            sebastien@laus-chauffage.be
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+
+  <!-- Bandeau -->
+  <tr>
+    <td style="background:#c0392b;padding:12px 32px">
+      <span style="color:white;font-size:13px;font-weight:bold;letter-spacing:0.04em">ANNULATION DE RENDEZ-VOUS</span>
+    </td>
+  </tr>
+
+  <!-- Corps -->
+  <tr>
+    <td style="background:white;padding:32px 32px 24px">
+      <p style="font-size:16px;color:#1e3a5f;font-weight:bold;margin:0 0 16px">Bonjour ${data.prenom} ${data.nom},</p>
+      <p style="font-size:14px;color:#333;line-height:1.7;margin:0 0 16px">
+        Nous vous informons que votre rendez-vous a dû être annulé :
+      </p>
+
+      <!-- Détails RDV -->
+      <table width="100%" cellpadding="0" cellspacing="0" style="background:#f7f9fc;border-radius:8px;margin:0 0 24px">
+        <tr><td style="padding:20px 24px">
+          <p style="margin:0 0 8px;font-size:13px;color:#555"><strong style="color:#1e3a5f">Service :</strong> ${data.service}</p>
+          <p style="margin:0 0 8px;font-size:13px;color:#555"><strong style="color:#1e3a5f">Date :</strong> ${data.date}</p>
+          <p style="margin:0;font-size:13px;color:#555"><strong style="color:#1e3a5f">Créneau :</strong> ${data.creneau}</p>
+        </td></tr>
+      </table>
+
+      <p style="font-size:14px;color:#333;line-height:1.7;margin:0 0 16px">
+        Nous nous excusons pour la gêne occasionnée. N'hésitez pas à nous contacter pour convenir d'une nouvelle date :
+      </p>
+
+      <!-- Téléphone -->
+      <table width="100%" cellpadding="0" cellspacing="0">
+        <tr><td align="center" style="padding:8px 0 24px">
+          <a href="tel:+32475200487" style="display:inline-block;background:#1e3a5f;color:white;text-decoration:none;font-weight:bold;font-size:15px;padding:14px 36px;border-radius:8px;letter-spacing:0.02em">
+            📞 +32 475 20 04 87
+          </a>
+        </td></tr>
+      </table>
+    </td>
+  </tr>
+
+  <!-- Signature -->
+  <tr>
+    <td style="background:#f7f9fc;padding:20px 32px;border-top:1px solid #e0e8f0">
+      <p style="margin:0 0 4px;font-size:13px;color:#555">Cordialement,</p>
+      <p style="margin:0;font-size:14px;font-weight:bold;color:#1e3a5f">Sébastien Laus</p>
+      <p style="margin:0;font-size:12px;color:#888">Laus Chauffage</p>
+    </td>
+  </tr>
+
+  <!-- Pied -->
+  <tr>
+    <td style="background:#1e3a5f;padding:12px 32px;border-radius:0 0 10px 10px;text-align:center">
+      <p style="margin:0;font-size:10px;color:#aac4e0">
+        Laus Chauffage — Route de Bruxelles, 17 — 1430 Rebecq<br>
+        <a href="https://www.laus-chauffage.be" style="color:#c0392b;text-decoration:none">www.laus-chauffage.be</a>
+      </p>
+    </td>
+  </tr>
+
+</table>
+</td></tr>
+</table>
+</body>
+</html>`,
+  });
+}
+
 export async function sendSatisfactionEmail(data: {
   civilite?: string;
   prenom: string;
